@@ -91,12 +91,31 @@ public class CalculoSimbolico {
             int dig;
             dig=temporal% (int) Math.pow( 2, 16);
             result.add(dig);
-                    System.out.print("\nacarreo \n"+(temporal/Math.pow( 2, 16)));
             acarreo= new Double (temporal/Math.pow( 2, 16)).intValue();
-                                System.out.print("\nacarreo \n"+acarreo);
         }
         return result;
-    }   
+    } 
+   public static ArrayList<Integer> mult_escuela(ArrayList<Integer> num1, ArrayList<Integer> num2){
+        ArrayList<Integer> result=new ArrayList<Integer>();
+
+        for(int i=0;i<num2.size();i++)
+            result.add(0);
+        
+        int acarreo=0, temporal=0;
+        for(int i=0;i<num1.size();i++){
+            acarreo=0;
+            for(int k=0;k<num2.size();k++){
+                temporal=num1.get(i)*num2.get(k)+result.get(i+k)+acarreo;
+                result.set(i+k, (temporal%(int) Math.pow( 2, 16)));
+                acarreo=new Double (temporal/Math.pow( 2, 16)).intValue();
+                System.out.print("\nACARREO\n"+acarreo);
+            }
+                 System.out.print("\nACARREO FINAL\n"+acarreo);
+            result.add( acarreo);
+        }        
+        
+        return result;
+   }
     public static void main(String[] args) {
         ArrayList<Integer> vector_enteros=new ArrayList<Integer>();
         ArrayList<Integer> vector_enteros2=new ArrayList<Integer>();
@@ -116,6 +135,12 @@ public class CalculoSimbolico {
         
         ArrayList<Integer> result_suma=new ArrayList<Integer>();
         result_suma=suma_escuela(vector_enteros, vector_enteros2);
+        System.out.print("\nResultado de sumar los dos numeros:");        
         mostrar_numero(result_suma);
+        
+        ArrayList<Integer> result_mult=new ArrayList<Integer>();
+        result_mult=mult_escuela(vector_enteros, vector_enteros2);
+        System.out.print("\nResultado de multiplicar los dos numeros:");        
+        mostrar_numero(result_mult);        
     }
 }
