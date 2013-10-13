@@ -116,6 +116,120 @@ public class CalculoSimbolico {
         
         return result;
    }
+   
+   
+   public static ArrayList<Integer> resta_escuela(ArrayList<Integer> num1, ArrayList<Integer> num2){
+        ArrayList<Integer> result=new ArrayList<>();
+        int acarreo = 0, temporal=0;
+        int num_dig;   
+        
+        if(num1.size()>num2.size()){
+            num_dig=num1.size();
+            for(int i=num2.size();i<num1.size();i++)
+                num2.add(0);
+        }else if(num2.size()>num1.size()){
+            num_dig=num2.size();
+            for(int i=num1.size();i<num2.size();i++)
+            num1.add(0);
+        }else{
+            num_dig=num2.size();
+        }
+
+        for(int i=0;i<num_dig;i++){
+            //num1 negativo y num2 positivo.
+            if(num1.get(i)<0 && num2.get(i)>0){
+               temporal=Math.abs(num1.get(i)) + num2.get(i) + acarreo;
+               result.add((temporal % (int) Math.pow( 2, 16))*(-1));
+               acarreo= (int) (temporal/Math.pow( 2, 16));
+            }
+            //num1 positivo y num2 negativo.
+            else if(num1.get(i)>0 && num2.get(i)<0){
+               temporal=num1.get(i) + Math.abs(num2.get(i)) - acarreo;
+               result.add(temporal % (int) Math.pow( 2, 16));
+               acarreo= (int) (temporal/Math.pow( 2, 16));
+            }
+            //Ambos negativos o ambos positivos o uno de los dos sea cero.
+            else{
+               result.add(num1.get(i) - num2.get(i) - acarreo);
+            }
+        }
+        //Si hay acarreo despues de restar el digito mas significativo se añade un nuevo digito al resultado.
+        if(acarreo!=0)
+            result.add(acarreo*(-1));
+            
+        return result;
+   }
+   
+   
+   
+   public static Integer mult_karatsuba(ArrayList<Integer> a, ArrayList<Integer> b, ArrayList<Integer> result){
+        Integer temporal_1, temporal_2, acarreo=0;
+        Integer m = a.size();
+        Integer desp1 = (int) Math.pow( Math.pow( 2, 16), m/2);
+        Integer desp2 = (int) Math.pow( Math.pow( 2, 16), m);
+        ArrayList<Integer> a0=new ArrayList<>();
+        ArrayList<Integer> a1=new ArrayList<>();
+        ArrayList<Integer> b0=new ArrayList<>();
+        ArrayList<Integer> b1=new ArrayList<>();
+
+        Integer t1;
+        Integer t2;
+        Integer t3;
+        
+        System.out.print("\nEl valor de m es: " +m); 
+        System.out.print("\nEl numero  a es: ");
+        mostrar_numero(a);
+        System.out.print("\nEl numero  b es: ");
+        mostrar_numero(b);
+         
+        if(m==1){
+           return a.get(0)*b.get(0);
+        }
+        else{
+            digitos_mas_sinificativos(a1, a);
+            digitos_menos_sinificativos(a0, a);
+            digitos_mas_sinificativos(b1, b);
+            digitos_menos_sinificativos(b0, b);
+            
+            t1 = mult_karatsuba(a1, b1, result);
+            t2 = mult_karatsuba(resta_escuela(a1, a0), resta_escuela(b0, b1), result);
+            t3 = mult_karatsuba(a0, b0, result);
+            
+            temporal_1 = t1 * desp2 + (t1 + t2 + t3) * desp1 + t3;
+            
+            temporal_2 = (temporal_1 % (int) Math.pow( 2, 16)) + acarreo;
+            result.add(temporal_2);
+            acarreo=new Double (temporal_1/Math.pow( 2, 16)).intValue();
+            result.add(acarreo);
+        
+            return temporal_2;
+        }
+   }
+   
+   
+   
+   public static void digitos_mas_sinificativos(ArrayList<Integer> parte, ArrayList<Integer> num){
+       if(num.size()% 2 != 0)
+           num.add(0);
+           
+       for(int i=0;i<num.size()/2;i++){
+           parte.add(num.get(i));
+       }
+   }
+   
+   
+   
+   public static void digitos_menos_sinificativos(ArrayList<Integer> parte, ArrayList<Integer> num){
+       if(num.size()% 2 != 0)
+           num.add(0);
+           
+       for(int i=num.size()/2;i<num.size();i++){
+           parte.add(num.get(i));
+       }
+   }
+   
+   
+   
     public static void main(String[] args) {
         ArrayList<Integer> vector_enteros=new ArrayList<Integer>();
         ArrayList<Integer> vector_enteros2=new ArrayList<Integer>();
