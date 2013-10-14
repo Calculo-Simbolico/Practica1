@@ -101,62 +101,89 @@ public class CalculoSimbolico {
         for(int i=0;i<num2.size();i++)
             result.add(0);
         
-        int acarreo=0, temporal=0;
+        long temporal=0;
+        int acarreo=0;
         for(int i=0;i<num1.size();i++){
             acarreo=0;
             for(int k=0;k<num2.size();k++){
-                temporal=num1.get(i)*num2.get(k)+result.get(i+k)+acarreo;
-                result.set(i+k, (temporal%(int) Math.pow( 2, 16)));
+                temporal=getUnsignedInt(num1.get(i)*num2.get(k))+result.get(i+k)+acarreo;
+                                System.out.print("\nTemporal"+temporal);
+                result.set(i+k, (int) (temporal%(int) Math.pow( 2, 16)));
                 acarreo=new Double (temporal/Math.pow( 2, 16)).intValue();
                 System.out.print("\nACARREO\n"+acarreo);
             }
-                 System.out.print("\nACARREO FINAL\n"+acarreo);
+            System.out.print("\nACARREO FINAL\n"+acarreo);
             result.add( acarreo);
         }        
         
         return result;
    }
    
-   
+   public static ArrayList<Integer> elimina_ceros_izq(ArrayList<Integer> num1){
+       int i=num1.size()-1;
+       while(num1.get(i)==0){
+           num1.remove(i);
+           i--;
+       }
+       return num1;
+   }
    public static ArrayList<Integer> resta_escuela(ArrayList<Integer> num1, ArrayList<Integer> num2){
         ArrayList<Integer> result=new ArrayList<>();
         int acarreo = 0, temporal=0;
-        int num_dig;   
+        int num_dig=0;   
+        int num_mayor=0;
         
         if(num1.size()>num2.size()){
             num_dig=num1.size();
+            num_mayor=1;
             for(int i=num2.size();i<num1.size();i++)
                 num2.add(0);
         }else if(num2.size()>num1.size()){
             num_dig=num2.size();
+            num_mayor=2;
             for(int i=num1.size();i<num2.size();i++)
-            num1.add(0);
+                num1.add(0);
         }else{
+            num_dig=num2.size();
+            int i=num_dig-1;
+            while(num_mayor==0){
+                if(num1.get(i)>num2.get(i)){
+                    num_mayor=1;
+                }else if(num2.get(i)>num1.get(i)){
+                    num_mayor=2;
+                }
+                i--;
+            }
             num_dig=num2.size();
         }
 
-        for(int i=0;i<num_dig;i++){
-            //num1 negativo y num2 positivo.
-            if(num1.get(i)<0 && num2.get(i)>0){
-               temporal=Math.abs(num1.get(i)) + num2.get(i) + acarreo;
-               result.add((temporal % (int) Math.pow( 2, 16))*(-1));
-               acarreo= (int) (temporal/Math.pow( 2, 16));
-            }
-            //num1 positivo y num2 negativo.
-            else if(num1.get(i)>0 && num2.get(i)<0){
-               temporal=num1.get(i) + Math.abs(num2.get(i)) - acarreo;
-               result.add(temporal % (int) Math.pow( 2, 16));
-               acarreo= (int) (temporal/Math.pow( 2, 16));
-            }
-            //Ambos negativos o ambos positivos o uno de los dos sea cero.
-            else{
-               result.add(num1.get(i) - num2.get(i) - acarreo);
-            }
+        boolean signo=true;
+        if(num_mayor==2){  //cambio los numeros de orden
+            signo=false;
+            ArrayList<Integer> aux=new ArrayList<Integer>();
+            aux=num1;
+            num1=num2;
+            num2=aux;
         }
-        //Si hay acarreo despues de restar el digito mas significativo se añade un nuevo digito al resultado.
-        if(acarreo!=0)
-            result.add(acarreo*(-1));
-            
+        for(int i=0;i<num_dig;i++){
+                acarreo=0;
+                temporal=num1.get(i) - num2.get(i);
+                System.out.print("\ntemporal "+temporal);
+                if(temporal<0){
+                    temporal=(int) Math.pow( 2, 16)+temporal;
+                    acarreo=1;
+                }
+                                System.out.print("\nacarreo "+acarreo);
+                result.add((temporal % (int) Math.pow( 2, 16)));
+                if(i+1!=num_dig){
+                    num2.set(i+1, num2.get(i+1)+acarreo);  
+                }
+        }
+        result=elimina_ceros_izq(result);
+        if(signo==false){
+            result.set(result.size()-1, result.get(result.size()-1)*(-1));
+        }   
+        
         return result;
    }
    
@@ -228,7 +255,9 @@ public class CalculoSimbolico {
        }
    }
    
-   
+    public static long getUnsignedInt(int x) {
+        return x & 0x00000000ffffffffL;
+    } 
    
     public static void main(String[] args) {
         ArrayList<Integer> vector_enteros=new ArrayList<Integer>();
@@ -236,6 +265,7 @@ public class CalculoSimbolico {
         ArrayList<Character> numChar=new ArrayList<Character>();
         ArrayList<Character> numChar2=new ArrayList<Character>();
         
+
         System.out.print("\nINTRODUCE UN NUMERO\n");
         numChar=leer_numero_hexadecimal();
         System.out.print("\nINTRODUCE OTRO NUMERO\n");
@@ -247,14 +277,24 @@ public class CalculoSimbolico {
         mostrar_numero(vector_enteros);
         mostrar_numero(vector_enteros2);
         
+        ArrayList<Integer> result_mult=new ArrayList<Integer>();
+        result_mult=mult_escuela(vector_enteros, vector_enteros2);
+        System.out.print("\nResultado de multiplicar los dos numeros:");        
+        mostrar_numero(result_mult);  
+        
+      /* 
         ArrayList<Integer> result_suma=new ArrayList<Integer>();
         result_suma=suma_escuela(vector_enteros, vector_enteros2);
         System.out.print("\nResultado de sumar los dos numeros:");        
         mostrar_numero(result_suma);
-        
-        ArrayList<Integer> result_mult=new ArrayList<Integer>();
-        result_mult=mult_escuela(vector_enteros, vector_enteros2);
-        System.out.print("\nResultado de multiplicar los dos numeros:");        
-        mostrar_numero(result_mult);        
+         
+      
+       
+        ArrayList<Integer> result_resta=new ArrayList<Integer>();
+        result_resta=resta_escuela(vector_enteros, vector_enteros2);
+        System.out.print("\nResultado de restar los dos numeros:");        
+        mostrar_numero(result_resta);  
+       */
+  
     }
 }
