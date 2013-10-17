@@ -43,7 +43,9 @@ public class CalculoSimbolico {
         }
         
         return numeroInt;
-    }
+   }
+    
+    
    public static ArrayList<Character> leer_numero_hexadecimal(){
                InputStreamReader isr = new InputStreamReader(System.in);
                 BufferedReader br = new BufferedReader (isr); 
@@ -61,12 +63,15 @@ public class CalculoSimbolico {
         }
         return numChar;
    }
+   
+   
    public static void mostrar_numero(ArrayList<Integer> vector_enteros){
         System.out.print("\nNumero: ");
         for(int i=0;i<vector_enteros.size();i++)
             System.out.print(" "+vector_enteros.get(vector_enteros.size()-1-i));
    }
-        
+   
+   
    public static ArrayList<Integer> suma_escuela(ArrayList<Integer> num1, ArrayList<Integer> num2){
         ArrayList<Integer> result=new ArrayList<Integer>();
         int num_dig;   
@@ -94,7 +99,9 @@ public class CalculoSimbolico {
             acarreo= new Double (temporal/Math.pow( 2, 16)).intValue();
         }
         return result;
-    } 
+   } 
+   
+   
    public static ArrayList<Integer> mult_escuela(ArrayList<Integer> num1, ArrayList<Integer> num2){
         ArrayList<Integer> result=new ArrayList<Integer>();
 
@@ -119,6 +126,7 @@ public class CalculoSimbolico {
         return result;
    }
    
+   
    public static ArrayList<Integer> elimina_ceros_izq(ArrayList<Integer> num1){
        int i=num1.size()-1;
        while(num1.get(i)==0){
@@ -127,6 +135,8 @@ public class CalculoSimbolico {
        }
        return num1;
    }
+   
+   
    public static ArrayList<Integer> resta_escuela(ArrayList<Integer> num1, ArrayList<Integer> num2){
         ArrayList<Integer> result=new ArrayList<>();
         int acarreo = 0, temporal=0;
@@ -173,7 +183,7 @@ public class CalculoSimbolico {
                     temporal=(int) Math.pow( 2, 16)+temporal;
                     acarreo=1;
                 }
-                                System.out.print("\nacarreo "+acarreo);
+                System.out.print("\nacarreo "+acarreo);
                 result.add((temporal % (int) Math.pow( 2, 16)));
                 if(i+1!=num_dig){
                     num2.set(i+1, num2.get(i+1)+acarreo);  
@@ -185,32 +195,31 @@ public class CalculoSimbolico {
         }   
         
         return result;
-   }
+    }
    
    
-   
-   public static Integer mult_karatsuba(ArrayList<Integer> a, ArrayList<Integer> b, ArrayList<Integer> result){
-        Integer temporal_1, temporal_2, acarreo=0;
-        Integer m = a.size();
+    public static long getUnsignedInt(int x) {
+        return x & 0x00000000ffffffffL;
+    } 
+    
+    
+    public static ArrayList<Integer> mult_karatsuba(ArrayList<Integer> a, ArrayList<Integer> b){
+       Integer m = a.size();
+        Integer temporal_1;
         Integer desp1 = (int) Math.pow( Math.pow( 2, 16), m/2);
         Integer desp2 = (int) Math.pow( Math.pow( 2, 16), m);
+        ArrayList<Integer> result=new ArrayList<>();
         ArrayList<Integer> a0=new ArrayList<>();
         ArrayList<Integer> a1=new ArrayList<>();
         ArrayList<Integer> b0=new ArrayList<>();
         ArrayList<Integer> b1=new ArrayList<>();
-
-        Integer t1;
-        Integer t2;
-        Integer t3;
-        
-        System.out.print("\nEl valor de m es: " +m); 
-        System.out.print("\nEl numero  a es: ");
-        mostrar_numero(a);
-        System.out.print("\nEl numero  b es: ");
-        mostrar_numero(b);
+        ArrayList<Integer> t1=new ArrayList<>();
+        ArrayList<Integer> t2=new ArrayList<>();
+        ArrayList<Integer> t3=new ArrayList<>();
          
         if(m==1){
-           return a.get(0)*b.get(0);
+            result.add(a.get(0)*b.get(0));
+            return result;
         }
         else{
             digitos_mas_sinificativos(a1, a);
@@ -218,24 +227,22 @@ public class CalculoSimbolico {
             digitos_mas_sinificativos(b1, b);
             digitos_menos_sinificativos(b0, b);
             
-            t1 = mult_karatsuba(a1, b1, result);
-            t2 = mult_karatsuba(resta_escuela(a1, a0), resta_escuela(b0, b1), result);
-            t3 = mult_karatsuba(a0, b0, result);
+            t1 = mult_karatsuba(a1, b1);
+            t2 = mult_karatsuba(resta_escuela(a1, a0), resta_escuela(b0, b1));
+            t3 = mult_karatsuba(a0, b0);
             
-            temporal_1 = t1 * desp2 + (t1 + t2 + t3) * desp1 + t3;
-            
-            temporal_2 = (temporal_1 % (int) Math.pow( 2, 16)) + acarreo;
-            result.add(temporal_2);
-            acarreo=new Double (temporal_1/Math.pow( 2, 16)).intValue();
-            result.add(acarreo);
+            //temporal_1 = t1 * desp2 + (t1 + t2 + t3) * desp1 + t3;
+ 
+            result.add(0, t3.get(0));
+            result.add(m/2, t1.get(0)+t2.get(0)+t3.get(0));
+            result.add(m, t1.get(0));
         
-            return temporal_2;
+            return result;
         }
    }
-   
-   
-   
-   public static void digitos_mas_sinificativos(ArrayList<Integer> parte, ArrayList<Integer> num){
+    
+    
+    public static void digitos_menos_sinificativos(ArrayList<Integer> parte, ArrayList<Integer> num){
        if(num.size()% 2 != 0)
            num.add(0);
            
@@ -243,10 +250,9 @@ public class CalculoSimbolico {
            parte.add(num.get(i));
        }
    }
-   
-   
-   
-   public static void digitos_menos_sinificativos(ArrayList<Integer> parte, ArrayList<Integer> num){
+    
+    
+   public static void digitos_mas_sinificativos(ArrayList<Integer> parte, ArrayList<Integer> num){
        if(num.size()% 2 != 0)
            num.add(0);
            
@@ -255,10 +261,54 @@ public class CalculoSimbolico {
        }
    }
    
-    public static long getUnsignedInt(int x) {
-        return x & 0x00000000ffffffffL;
-    } 
    
+   public static ArrayList<Integer> hacer_modulo(ArrayList<Integer> num){
+       ArrayList<Integer> result=new ArrayList<>();
+       Integer temporal, acarreo=0, digito;
+       
+       for(int i=0;i<num.size();i++){
+            temporal=num.get(i) + acarreo;
+            digito =  temporal % (int) Math.pow( 2, 16);
+            acarreo= new Double (temporal/Math.pow( 2, 16)).intValue();
+            result.add(digito);
+       }
+       return result;
+       
+   }
+   
+   
+   public static void main(String[] args) {
+        ArrayList<Integer> vector_enteros=new ArrayList<>();
+        ArrayList<Integer> vector_enteros2=new ArrayList<>();
+        ArrayList<Character> numChar=new ArrayList<>();
+        ArrayList<Character> numChar2=new ArrayList<>();
+        
+        System.out.print("\nINTRODUCE UN NUMERO\n");
+        numChar=leer_numero_hexadecimal();
+        System.out.print("\nINTRODUCE OTRO NUMERO\n");
+        numChar2=leer_numero_hexadecimal();
+
+        vector_enteros=cambiaBase(numChar);
+        vector_enteros2=cambiaBase(numChar2);
+        
+        mostrar_numero(vector_enteros);
+        mostrar_numero(vector_enteros2);
+        
+        ArrayList<Integer> result_mult1=new ArrayList<Integer>();
+        result_mult1=mult_escuela(vector_enteros, vector_enteros2);
+        System.out.print("\nResultado de multiplicar los dos numeros ESCUELA:");        
+        mostrar_numero(result_mult1);  
+        
+        ArrayList<Integer> result_mult2=new ArrayList<Integer>();
+        ArrayList<Integer> result_mult3=new ArrayList<Integer>();
+        result_mult2=mult_karatsuba(vector_enteros, vector_enteros2);
+        System.out.print("\nTamaño= " +result_mult2.size());
+        result_mult3=hacer_modulo(result_mult2);
+        System.out.print("\nResultado de multiplicar los dos numeros KARATSUBA: ");        
+        mostrar_numero(result_mult3);
+   }
+   
+    /*
     public static void main(String[] args) {
         ArrayList<Integer> vector_enteros=new ArrayList<Integer>();
         ArrayList<Integer> vector_enteros2=new ArrayList<Integer>();
@@ -282,7 +332,7 @@ public class CalculoSimbolico {
         System.out.print("\nResultado de multiplicar los dos numeros:");        
         mostrar_numero(result_mult);  
         
-      /* 
+      
         ArrayList<Integer> result_suma=new ArrayList<Integer>();
         result_suma=suma_escuela(vector_enteros, vector_enteros2);
         System.out.print("\nResultado de sumar los dos numeros:");        
