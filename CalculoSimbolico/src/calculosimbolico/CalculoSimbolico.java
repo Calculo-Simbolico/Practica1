@@ -116,12 +116,9 @@ public class CalculoSimbolico {
             acarreo=0;
             for(int k=0;k<num2.size();k++){
                 temporal=getUnsignedInt(num1.get(i)*num2.get(k))+result.get(i+k)+acarreo;
-                                System.out.print("\nTemporal"+temporal);
                 result.set(i+k, (int) (temporal%(int) Math.pow( 2, 16)));
                 acarreo=new Double (temporal/Math.pow( 2, 16)).intValue();
-                System.out.print("\nACARREO\n"+acarreo);
             }
-            System.out.print("\nACARREO FINAL\n"+acarreo);
             result.add( acarreo);
         }        
         
@@ -131,7 +128,7 @@ public class CalculoSimbolico {
    
    public static ArrayList<Integer> elimina_ceros_izq(ArrayList<Integer> num1){
        int i=num1.size()-1;
-       while(num1.get(i)==0){
+       while(num1.get(i)==0 && num1.size()!=1){
            num1.remove(i);
            i--;
        }
@@ -139,7 +136,7 @@ public class CalculoSimbolico {
    }
    
    
-   public static ArrayList<Integer> resta_escuela(ArrayList<Integer> num1, ArrayList<Integer> num2){
+   public static ArrayList<Integer> resta_escuela(ArrayList<Integer> num1, ArrayList<Integer> num2){        
         ArrayList<Integer> result=new ArrayList<>();
         int acarreo = 0, temporal=0;
         int num_dig=0;   
@@ -158,7 +155,7 @@ public class CalculoSimbolico {
         }else{
             num_dig=num2.size();
             int i=num_dig-1;
-            while(num_mayor==0){
+            while(num_mayor==0 && i>-1){
                 if(num1.get(i)>num2.get(i)){
                     num_mayor=1;
                 }else if(num2.get(i)>num1.get(i)){
@@ -180,12 +177,10 @@ public class CalculoSimbolico {
         for(int i=0;i<num_dig;i++){
                 acarreo=0;
                 temporal=num1.get(i) - num2.get(i);
-                System.out.print("\ntemporal "+temporal);
                 if(temporal<0){
                     temporal=(int) Math.pow( 2, 16)+temporal;
                     acarreo=1;
                 }
-                System.out.print("\nacarreo "+acarreo);
                 result.add((temporal % (int) Math.pow( 2, 16)));
                 if(i+1!=num_dig){
                     num2.set(i+1, num2.get(i+1)+acarreo);  
@@ -195,7 +190,6 @@ public class CalculoSimbolico {
         if(signo==false){
             result.set(result.size()-1, result.get(result.size()-1)*(-1));
         }   
-        
         return result;
     }
    
@@ -204,13 +198,36 @@ public class CalculoSimbolico {
         return x & 0x00000000ffffffffL;
     } 
     
-    
-    public static ArrayList<Integer> mult_karatsuba(ArrayList<Integer> a, ArrayList<Integer> b, ArrayList<Integer> result){
-        Integer m = a.size();
+    public static ArrayList<Integer> calcula_m_karatsuba(ArrayList<Integer> num1, ArrayList<Integer> num2){
+        int num_dig=0, num_mayor;
+        ArrayList<Integer> vector_enteros=new ArrayList<>();
+        ArrayList<Integer> result=new ArrayList<>();        
+        if(num1.size()>=num2.size()){
+            num_dig=num1.size();
+            num_mayor=1;
+        }else if(num2.size()>num1.size()){
+            num_dig=num2.size();
+            num_mayor=2;
+        }
+        
+        int m=0;
+        while(num_dig-(int) Math.pow( 2, m)>0){
+            m++;
+        }
+        for(int i=num1.size();i< Math.pow( 2, m);i++){
+            num1.add(0);
+        }
+        for(int i=num2.size();i< Math.pow( 2, m);i++){
+            num2.add(0);
+        }        
+        result=mult_karatsuba(num1, num2, m);
+        
+        return result;
+    }
+    public static ArrayList<Integer> mult_karatsuba(ArrayList<Integer> a, ArrayList<Integer> b, int m){
+        //Integer m = a.size();
         Integer acarreo=0;
-        Integer desp1 = (int) Math.pow( Math.pow( 2, 16), m/2);
-        Integer desp2 = (int) Math.pow( Math.pow( 2, 16), m);
-        ArrayList<Integer> aux=new ArrayList<>();
+        //ArrayList<Integer> aux=new ArrayList<>();
         ArrayList<Integer> a0=new ArrayList<>();
         ArrayList<Integer> a1=new ArrayList<>();
         ArrayList<Integer> b0=new ArrayList<>();
@@ -218,93 +235,114 @@ public class CalculoSimbolico {
         ArrayList<Integer> t1=new ArrayList<>();
         ArrayList<Integer> t2=new ArrayList<>();
         ArrayList<Integer> t3=new ArrayList<>();
+        ArrayList<Integer> result=new ArrayList<>();
          
-        if(m==1){
-            aux.add(a.get(0)*b.get(0));
-            return aux;
-        }
-        else{
+        long temporal;
+        if(m==0){
+            temporal=getUnsignedInt(a.get(0)*b.get(0));
+            result.add((int) (temporal%(int) Math.pow( 2, 16)));
+            acarreo=new Double (temporal/Math.pow( 2, 16)).intValue();
+            result.add( acarreo);
+            
+            return result;
+        }else{
             digitos_mas_sinificativos(a1, a);
             digitos_menos_sinificativos(a0, a);
             digitos_mas_sinificativos(b1, b);
             digitos_menos_sinificativos(b0, b);
             
-            t1 = mult_karatsuba(a1, b1, result);
-            t2 = mult_karatsuba(resta_escuela(a1, a0), resta_escuela(b0, b1), result);
-            t3 = mult_karatsuba(a0, b0, result);
+            t1 = mult_karatsuba(a1, b1, m-1);
             
-            //temporal_1 = t1 * desp2 + (t1 + t2 + t3) * desp1 + t3;
- 
-            result.add(0, (t3.get(0)+acarreo)%(int) Math.pow( 2, 16));
-            acarreo=new Double (t3.get(0)/Math.pow( 2, 16)).intValue();
-            result.add(m/2, (t1.get(0)+t2.get(0)+t3.get(0)+acarreo)%(int) Math.pow( 2, 16));
-            acarreo=new Double ((t1.get(0)+t2.get(0)+t3.get(0)+acarreo)/Math.pow( 2, 16)).intValue();
-            result.add(m, (t1.get(0+acarreo)%(int) Math.pow( 2, 16)));
-            result.add(acarreo);
-        
-            return result;
+            boolean signo1=true, signo2=true;
+            ArrayList<Integer> resta1=new ArrayList<>();
+            ArrayList<Integer> resta2=new ArrayList<>();
+            resta1=resta_escuela(a1, a0);
+            resta2=resta_escuela(b0, b1);
+            if(resta1.get(resta1.size()-1)<0){
+                signo1=false;
+                resta1.set(resta1.size()-1,resta1.get(resta1.size()-1)*(-1));
+            }
+            if(resta2.get(resta2.size()-1)<0){
+                signo2=false;
+                resta2.set(resta2.size()-1,resta2.get(resta2.size()-1)*(-1));
+            }           
+              
+            t2 = mult_karatsuba(resta1, resta2, m-1);
+            t3 = mult_karatsuba(a0, b0, m-1);          
+           
+            ArrayList<Integer> aux=new ArrayList<>();
+            acarreo=0;
+            temporal=0;
+            if(signo1==signo2){//si t2 sale positivo lo sumo
+                for(int i=0;i<Math.pow( 2, m);i++){
+                    temporal=t1.get(i)+t2.get(i)+t3.get(i)+acarreo;
+                    int dig;
+                    dig=(int) temporal% (int) Math.pow( 2, 16);
+                    aux.add(dig);
+                    acarreo= new Double (temporal/Math.pow( 2, 16)).intValue();
+                }
+                aux.add( acarreo);
+            }else{//si t2 sale negativo aux=t1+t3-t2
+                
+                ArrayList<Integer> aux3=new ArrayList<>();
+                for(int i=0;i<Math.pow( 2, m);i++){
+                    temporal=t1.get(i)+t3.get(i)+acarreo;
+                    int dig;
+                    dig=(int) temporal% (int) Math.pow( 2, 16);
+                    aux3.add(dig);
+                    acarreo= new Double (temporal/Math.pow( 2, 16)).intValue();
+                }
+                aux3.add( acarreo);
+   
+                aux3=elimina_ceros_izq(aux3);
+                t2=elimina_ceros_izq(t2);
+                aux=resta_escuela(aux3, t2);             
+            }
+            for(int i=0;i<m;i++){
+                aux.add(0, 0);
+            }
+            for(int i=0;i<2*m;i++){
+                t1.add(0, 0);
+            }     
+            for(int i=aux.size();i<t1.size();i++){
+                aux.add(0);
+            }
+            for(int i=t3.size();i<t1.size();i++){
+                t3.add(0);
+            }
+            ArrayList<Integer> aux2=new ArrayList<>();
+            acarreo=0;
+            temporal=0;
+                
+                        System.out.print("\n t3");
+                        mostrar_numero(t3); 
+                        System.out.print("\n aux");
+                        mostrar_numero(aux);   
+                        System.out.print("\n t1");
+                        mostrar_numero(t1);   
+            for(int i=0;i<t1.size();i++){
+                temporal=t1.get(i)+aux.get(i)+t3.get(i)+acarreo;
+                int dig;
+                dig=(int) temporal% (int) Math.pow( 2, 16);
+                aux2.add(dig);
+                acarreo= new Double (temporal/Math.pow( 2, 16)).intValue();
+            }
+            aux2.add( acarreo);
+
+            return aux2;
         }
    }
     
-    /*
-     public static ArrayList<Integer> mult_karatsuba(ArrayList<Integer> a, ArrayList<Integer> b){
-        Integer m = a.size();
-        long temporal;
-        Integer acarreo=0;
-        Integer desp1 = (int) Math.pow( Math.pow( 2, 16), m/2);
-        Integer desp2 = (int) Math.pow( Math.pow( 2, 16), m);
-        ArrayList<Integer> result=new ArrayList<>();
-        ArrayList<Integer> aux=new ArrayList<>();
-        ArrayList<Integer> a0=new ArrayList<>();
-        ArrayList<Integer> a1=new ArrayList<>();
-        ArrayList<Integer> b0=new ArrayList<>();
-        ArrayList<Integer> b1=new ArrayList<>();
-        ArrayList<Integer> t1=new ArrayList<>();
-        ArrayList<Integer> t2=new ArrayList<>();
-        ArrayList<Integer> t3=new ArrayList<>();
-         
-        if(m==1){
-            temporal=getUnsignedInt(a.get(0)*b.get(0));
-            result.add((int)(temporal%(int) Math.pow( 2, 16)));
-            acarreo=new Double (temporal/Math.pow( 2, 16)).intValue();
-            result.add(acarreo);
-            return result;
-        }
-        else{
-            digitos_mas_sinificativos(a1, a);
-            digitos_menos_sinificativos(a0, a);
-            digitos_mas_sinificativos(b1, b);
-            digitos_menos_sinificativos(b0, b);
-            
-            t1 = mult_karatsuba(a1, b1);
-            t2 = mult_karatsuba(resta_escuela(a1, a0), resta_escuela(b0, b1));
-            t3 = mult_karatsuba(a0, b0);
-            
-            //temporal_1 = t1 * desp2 + (t1 + t2 + t3) * desp1 + t3;
- 
-            result.add(0, t3.get(0));
-            result.add(m/2, t1.get(0)+t2.get(0)+t3.get(0));
-            result.add(m, t1.get(0));
-        
-            return result;
-        }
-   }*/
     
     
-    public static void digitos_menos_sinificativos(ArrayList<Integer> parte, ArrayList<Integer> num){
-       if(num.size()% 2 != 0)
-           num.add(0);
-           
+    public static void digitos_menos_sinificativos(ArrayList<Integer> parte, ArrayList<Integer> num){           
        for(int i=0;i<num.size()/2;i++){
            parte.add(num.get(i));
        }
    }
     
     
-   public static void digitos_mas_sinificativos(ArrayList<Integer> parte, ArrayList<Integer> num){
-       if(num.size()% 2 != 0)
-           num.add(0);
-           
+   public static void digitos_mas_sinificativos(ArrayList<Integer> parte, ArrayList<Integer> num){         
        for(int i=num.size()/2;i<num.size();i++){
            parte.add(num.get(i));
        }
@@ -350,10 +388,9 @@ public class CalculoSimbolico {
         
         ArrayList<Integer> result_mult2=new ArrayList<Integer>();
         ArrayList<Integer> result=new ArrayList<>();
-        mult_karatsuba(vector_enteros, vector_enteros2, result);
-        System.out.print("\nTamaño= " +result_mult2.size());
+        result_mult2=calcula_m_karatsuba(vector_enteros, vector_enteros2);
         System.out.print("\nResultado de multiplicar los dos numeros KARATSUBA:");
-        mostrar_numero(result);
+        mostrar_numero(result_mult2);
    }
    
    
