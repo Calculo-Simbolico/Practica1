@@ -69,6 +69,8 @@ public class CalculoSimbolico {
         System.out.print("\nNumero: ");
         for(int i=0;i<vector_enteros.size();i++)
             System.out.print(" "+vector_enteros.get(vector_enteros.size()-1-i));
+        
+        System.out.print("\n");
    }
    
    
@@ -203,12 +205,12 @@ public class CalculoSimbolico {
     } 
     
     
-    public static ArrayList<Integer> mult_karatsuba(ArrayList<Integer> a, ArrayList<Integer> b){
-       Integer m = a.size();
-        Integer temporal_1;
+    public static ArrayList<Integer> mult_karatsuba(ArrayList<Integer> a, ArrayList<Integer> b, ArrayList<Integer> result){
+        Integer m = a.size();
+        Integer acarreo=0;
         Integer desp1 = (int) Math.pow( Math.pow( 2, 16), m/2);
         Integer desp2 = (int) Math.pow( Math.pow( 2, 16), m);
-        ArrayList<Integer> result=new ArrayList<>();
+        ArrayList<Integer> aux=new ArrayList<>();
         ArrayList<Integer> a0=new ArrayList<>();
         ArrayList<Integer> a1=new ArrayList<>();
         ArrayList<Integer> b0=new ArrayList<>();
@@ -218,7 +220,54 @@ public class CalculoSimbolico {
         ArrayList<Integer> t3=new ArrayList<>();
          
         if(m==1){
-            result.add(a.get(0)*b.get(0));
+            aux.add(a.get(0)*b.get(0));
+            return aux;
+        }
+        else{
+            digitos_mas_sinificativos(a1, a);
+            digitos_menos_sinificativos(a0, a);
+            digitos_mas_sinificativos(b1, b);
+            digitos_menos_sinificativos(b0, b);
+            
+            t1 = mult_karatsuba(a1, b1, result);
+            t2 = mult_karatsuba(resta_escuela(a1, a0), resta_escuela(b0, b1), result);
+            t3 = mult_karatsuba(a0, b0, result);
+            
+            //temporal_1 = t1 * desp2 + (t1 + t2 + t3) * desp1 + t3;
+ 
+            result.add(0, (t3.get(0)+acarreo)%(int) Math.pow( 2, 16));
+            acarreo=new Double (t3.get(0)/Math.pow( 2, 16)).intValue();
+            result.add(m/2, (t1.get(0)+t2.get(0)+t3.get(0)+acarreo)%(int) Math.pow( 2, 16));
+            acarreo=new Double ((t1.get(0)+t2.get(0)+t3.get(0)+acarreo)/Math.pow( 2, 16)).intValue();
+            result.add(m, (t1.get(0+acarreo)%(int) Math.pow( 2, 16)));
+            result.add(acarreo);
+        
+            return result;
+        }
+   }
+    
+    /*
+     public static ArrayList<Integer> mult_karatsuba(ArrayList<Integer> a, ArrayList<Integer> b){
+        Integer m = a.size();
+        long temporal;
+        Integer acarreo=0;
+        Integer desp1 = (int) Math.pow( Math.pow( 2, 16), m/2);
+        Integer desp2 = (int) Math.pow( Math.pow( 2, 16), m);
+        ArrayList<Integer> result=new ArrayList<>();
+        ArrayList<Integer> aux=new ArrayList<>();
+        ArrayList<Integer> a0=new ArrayList<>();
+        ArrayList<Integer> a1=new ArrayList<>();
+        ArrayList<Integer> b0=new ArrayList<>();
+        ArrayList<Integer> b1=new ArrayList<>();
+        ArrayList<Integer> t1=new ArrayList<>();
+        ArrayList<Integer> t2=new ArrayList<>();
+        ArrayList<Integer> t3=new ArrayList<>();
+         
+        if(m==1){
+            temporal=getUnsignedInt(a.get(0)*b.get(0));
+            result.add((int)(temporal%(int) Math.pow( 2, 16)));
+            acarreo=new Double (temporal/Math.pow( 2, 16)).intValue();
+            result.add(acarreo);
             return result;
         }
         else{
@@ -239,7 +288,7 @@ public class CalculoSimbolico {
         
             return result;
         }
-   }
+   }*/
     
     
     public static void digitos_menos_sinificativos(ArrayList<Integer> parte, ArrayList<Integer> num){
@@ -300,13 +349,15 @@ public class CalculoSimbolico {
         mostrar_numero(result_mult1);  
         
         ArrayList<Integer> result_mult2=new ArrayList<Integer>();
-        ArrayList<Integer> result_mult3=new ArrayList<Integer>();
-        result_mult2=mult_karatsuba(vector_enteros, vector_enteros2);
+        ArrayList<Integer> result=new ArrayList<>();
+        mult_karatsuba(vector_enteros, vector_enteros2, result);
         System.out.print("\nTamaño= " +result_mult2.size());
-        result_mult3=hacer_modulo(result_mult2);
-        System.out.print("\nResultado de multiplicar los dos numeros KARATSUBA: ");        
-        mostrar_numero(result_mult3);
+        System.out.print("\nResultado de multiplicar los dos numeros KARATSUBA:");
+        mostrar_numero(result);
    }
+   
+   
+   
    
     /*
     public static void main(String[] args) {
@@ -345,6 +396,6 @@ public class CalculoSimbolico {
         System.out.print("\nResultado de restar los dos numeros:");        
         mostrar_numero(result_resta);  
        */
-  
-    }
+
+    
 }
