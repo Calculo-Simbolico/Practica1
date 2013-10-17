@@ -66,11 +66,8 @@ public class CalculoSimbolico {
    
    
    public static void mostrar_numero(ArrayList<Integer> vector_enteros){
-        System.out.print("\nNumero: ");
         for(int i=0;i<vector_enteros.size();i++)
             System.out.print(" "+vector_enteros.get(vector_enteros.size()-1-i));
-        
-        System.out.print("\n");
    }
    
    
@@ -165,7 +162,6 @@ public class CalculoSimbolico {
             }
             num_dig=num2.size();
         }
-
         boolean signo=true;
         if(num_mayor==2){  //cambio los numeros de orden
             signo=false;
@@ -174,6 +170,13 @@ public class CalculoSimbolico {
             num1=num2;
             num2=aux;
         }
+                               System.out.print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!resta_escuela num1");
+                mostrar_numero(num1);
+                 System.out.print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!resta_escuela num2");
+                mostrar_numero(num2);
+        ArrayList<Integer> aux3=new ArrayList<>();
+        for(int i=0;i<num2.size();i++)
+            aux3.add(num2.get(i));
         for(int i=0;i<num_dig;i++){
                 acarreo=0;
                 temporal=num1.get(i) - num2.get(i);
@@ -190,6 +193,13 @@ public class CalculoSimbolico {
         if(signo==false){
             result.set(result.size()-1, result.get(result.size()-1)*(-1));
         }   
+        num2.clear();
+        for(int i=0;i<aux3.size();i++)
+            num2.add(aux3.get(i));
+                       System.out.print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!resta_escuela num1");
+                mostrar_numero(num1);
+                 System.out.print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!resta_escuela num2");
+                mostrar_numero(num2);
         return result;
     }
    
@@ -225,9 +235,8 @@ public class CalculoSimbolico {
         return result;
     }
     public static ArrayList<Integer> mult_karatsuba(ArrayList<Integer> a, ArrayList<Integer> b, int m){
-        //Integer m = a.size();
+
         Integer acarreo=0;
-        //ArrayList<Integer> aux=new ArrayList<>();
         ArrayList<Integer> a0=new ArrayList<>();
         ArrayList<Integer> a1=new ArrayList<>();
         ArrayList<Integer> b0=new ArrayList<>();
@@ -236,13 +245,20 @@ public class CalculoSimbolico {
         ArrayList<Integer> t2=new ArrayList<>();
         ArrayList<Integer> t3=new ArrayList<>();
         ArrayList<Integer> result=new ArrayList<>();
-         
+                        System.out.print("\nEMPIEZA m="+m);
+                        System.out.print("\n a");
+                        mostrar_numero(a); 
+                        System.out.print("\n b");
+                        mostrar_numero(b);   
         long temporal;
         if(m==0){
             temporal=getUnsignedInt(a.get(0)*b.get(0));
             result.add((int) (temporal%(int) Math.pow( 2, 16)));
             acarreo=new Double (temporal/Math.pow( 2, 16)).intValue();
             result.add( acarreo);
+            
+                System.out.print("\n    m=0 result =");
+                mostrar_numero(result);
             
             return result;
         }else{
@@ -256,7 +272,7 @@ public class CalculoSimbolico {
             boolean signo1=true, signo2=true;
             ArrayList<Integer> resta1=new ArrayList<>();
             ArrayList<Integer> resta2=new ArrayList<>();
-            resta1=resta_escuela(a1, a0);
+            resta1=resta_escuela(a1, a0);     
             resta2=resta_escuela(b0, b1);
             if(resta1.get(resta1.size()-1)<0){
                 signo1=false;
@@ -265,14 +281,34 @@ public class CalculoSimbolico {
             if(resta2.get(resta2.size()-1)<0){
                 signo2=false;
                 resta2.set(resta2.size()-1,resta2.get(resta2.size()-1)*(-1));
-            }           
-              
+            }        
+            for(int i=resta1.size();i<Math.pow( 2, m-1);i++){//añado ceros a la izq por si en la resta se pierden ( 15 - 10 =5 MAL, BIEN=05)
+                resta1.add(0);
+            }
+            for(int i=resta2.size();i<Math.pow( 2, m-1);i++){//añado ceros a la izq por si en la resta se pierden ( 15 - 10 =5 MAL, BIEN=05)
+                resta2.add(0);
+            }
+            if(signo1==false){
+                System.out.print("\n resta!!!!!!! negativa1 =");
+                mostrar_numero(a1);
+                System.out.print(" - ");
+                mostrar_numero(a0);     
+            }
+            if(signo2==false){
+                System.out.print("\n resta!!!!!!! negativa2 =");
+                mostrar_numero(b0);
+                System.out.print(" - ");
+                mostrar_numero(b1);     
+            } 
             t2 = mult_karatsuba(resta1, resta2, m-1);
             t3 = mult_karatsuba(a0, b0, m-1);          
            
             ArrayList<Integer> aux=new ArrayList<>();
             acarreo=0;
             temporal=0;
+            if(m==3){
+                System.out.print("\n signo1="+signo1+" signo2="+signo2);
+            }
             if(signo1==signo2){//si t2 sale positivo lo sumo
                 for(int i=0;i<Math.pow( 2, m);i++){
                     temporal=t1.get(i)+t2.get(i)+t3.get(i)+acarreo;
@@ -295,13 +331,22 @@ public class CalculoSimbolico {
                 aux3.add( acarreo);
    
                 aux3=elimina_ceros_izq(aux3);
-                t2=elimina_ceros_izq(t2);
-                aux=resta_escuela(aux3, t2);             
+                t2=elimina_ceros_izq(t2); 
+                aux=resta_escuela(aux3, t2);       
             }
-            for(int i=0;i<m;i++){
+            
+                System.out.print("\n                                                                                t1+t2+t3= ");
+                mostrar_numero(t1);
+                                System.out.print(" + ");
+                mostrar_numero(t2);
+                                                System.out.print(" + ");
+                mostrar_numero(t3);
+                                System.out.print("\n                                                                                                           ==");
+                mostrar_numero(aux);
+            for(int i=0;i< Math.pow( 2, m-1);i++){
                 aux.add(0, 0);
             }
-            for(int i=0;i<2*m;i++){
+            for(int i=0;i< Math.pow( 2, m);i++){
                 t1.add(0, 0);
             }     
             for(int i=aux.size();i<t1.size();i++){
@@ -313,13 +358,13 @@ public class CalculoSimbolico {
             ArrayList<Integer> aux2=new ArrayList<>();
             acarreo=0;
             temporal=0;
-                
-                        System.out.print("\n t3");
-                        mostrar_numero(t3); 
-                        System.out.print("\n aux");
-                        mostrar_numero(aux);   
-                        System.out.print("\n t1");
-                        mostrar_numero(t1);   
+
+                System.out.print("\n t1");
+                mostrar_numero(t1);
+                                System.out.print("\n aux");
+                mostrar_numero(aux);
+                                System.out.print("\n t3");
+                mostrar_numero(t3);
             for(int i=0;i<t1.size();i++){
                 temporal=t1.get(i)+aux.get(i)+t3.get(i)+acarreo;
                 int dig;
@@ -329,6 +374,8 @@ public class CalculoSimbolico {
             }
             aux2.add( acarreo);
 
+                        System.out.print("\n                                                            m="+m+"result=");
+                        mostrar_numero(aux2); 
             return aux2;
         }
    }
@@ -371,26 +418,31 @@ public class CalculoSimbolico {
         ArrayList<Character> numChar2=new ArrayList<>();
         
         System.out.print("\nINTRODUCE UN NUMERO\n");
-        numChar=leer_numero_hexadecimal();
+        //numChar=leer_numero_hexadecimal();
         System.out.print("\nINTRODUCE OTRO NUMERO\n");
-        numChar2=leer_numero_hexadecimal();
-
+        //numChar2=leer_numero_hexadecimal();
+        for(int i=0;i<30;i++)
+            numChar.add('F');
+        for(int i=0;i<30;i++)
+            numChar2.add('F');
         vector_enteros=cambiaBase(numChar);
         vector_enteros2=cambiaBase(numChar2);
         
         mostrar_numero(vector_enteros);
         mostrar_numero(vector_enteros2);
         
-        ArrayList<Integer> result_mult1=new ArrayList<Integer>();
-        result_mult1=mult_escuela(vector_enteros, vector_enteros2);
-        System.out.print("\nResultado de multiplicar los dos numeros ESCUELA:");        
-        mostrar_numero(result_mult1);  
+
         
         ArrayList<Integer> result_mult2=new ArrayList<Integer>();
         ArrayList<Integer> result=new ArrayList<>();
         result_mult2=calcula_m_karatsuba(vector_enteros, vector_enteros2);
-        System.out.print("\nResultado de multiplicar los dos numeros KARATSUBA:");
+        System.out.print("\nResultado de multiplicar los dos numeros KARATSUBA: ");
         mostrar_numero(result_mult2);
+        
+        ArrayList<Integer> result_mult1=new ArrayList<Integer>();
+        result_mult1=mult_escuela(vector_enteros, vector_enteros2);
+        System.out.print("\nResultado de multiplicar los dos numeros ESCUELA: ");        
+        mostrar_numero(result_mult1);          
    }
    
    
