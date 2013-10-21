@@ -170,10 +170,6 @@ public class CalculoSimbolico {
             num1=num2;
             num2=aux;
         }
-                               System.out.print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!resta_escuela num1");
-                mostrar_numero(num1);
-                 System.out.print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!resta_escuela num2");
-                mostrar_numero(num2);
         ArrayList<Integer> aux3=new ArrayList<>();
         for(int i=0;i<num2.size();i++)
             aux3.add(num2.get(i));
@@ -196,10 +192,7 @@ public class CalculoSimbolico {
         num2.clear();
         for(int i=0;i<aux3.size();i++)
             num2.add(aux3.get(i));
-                       System.out.print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!resta_escuela num1");
-                mostrar_numero(num1);
-                 System.out.print("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!resta_escuela num2");
-                mostrar_numero(num2);
+
         return result;
     }
    
@@ -245,20 +238,13 @@ public class CalculoSimbolico {
         ArrayList<Integer> t2=new ArrayList<>();
         ArrayList<Integer> t3=new ArrayList<>();
         ArrayList<Integer> result=new ArrayList<>();
-                        System.out.print("\nEMPIEZA m="+m);
-                        System.out.print("\n a");
-                        mostrar_numero(a); 
-                        System.out.print("\n b");
-                        mostrar_numero(b);   
+   
         long temporal;
         if(m==0){
             temporal=getUnsignedInt(a.get(0)*b.get(0));
             result.add((int) (temporal%(int) Math.pow( 2, 16)));
             acarreo=new Double (temporal/Math.pow( 2, 16)).intValue();
             result.add( acarreo);
-            
-                System.out.print("\n    m=0 result =");
-                mostrar_numero(result);
             
             return result;
         }else{
@@ -288,27 +274,13 @@ public class CalculoSimbolico {
             for(int i=resta2.size();i<Math.pow( 2, m-1);i++){//añado ceros a la izq por si en la resta se pierden ( 15 - 10 =5 MAL, BIEN=05)
                 resta2.add(0);
             }
-            if(signo1==false){
-                System.out.print("\n resta!!!!!!! negativa1 =");
-                mostrar_numero(a1);
-                System.out.print(" - ");
-                mostrar_numero(a0);     
-            }
-            if(signo2==false){
-                System.out.print("\n resta!!!!!!! negativa2 =");
-                mostrar_numero(b0);
-                System.out.print(" - ");
-                mostrar_numero(b1);     
-            } 
+
             t2 = mult_karatsuba(resta1, resta2, m-1);
             t3 = mult_karatsuba(a0, b0, m-1);          
            
             ArrayList<Integer> aux=new ArrayList<>();
             acarreo=0;
             temporal=0;
-            if(m==3){
-                System.out.print("\n signo1="+signo1+" signo2="+signo2);
-            }
             if(signo1==signo2){//si t2 sale positivo lo sumo
                 for(int i=0;i<Math.pow( 2, m);i++){
                     temporal=t1.get(i)+t2.get(i)+t3.get(i)+acarreo;
@@ -334,15 +306,7 @@ public class CalculoSimbolico {
                 t2=elimina_ceros_izq(t2); 
                 aux=resta_escuela(aux3, t2);       
             }
-            
-                System.out.print("\n                                                                                t1+t2+t3= ");
-                mostrar_numero(t1);
-                                System.out.print(" + ");
-                mostrar_numero(t2);
-                                                System.out.print(" + ");
-                mostrar_numero(t3);
-                                System.out.print("\n                                                                                                           ==");
-                mostrar_numero(aux);
+
             for(int i=0;i< Math.pow( 2, m-1);i++){
                 aux.add(0, 0);
             }
@@ -359,12 +323,6 @@ public class CalculoSimbolico {
             acarreo=0;
             temporal=0;
 
-                System.out.print("\n t1");
-                mostrar_numero(t1);
-                                System.out.print("\n aux");
-                mostrar_numero(aux);
-                                System.out.print("\n t3");
-                mostrar_numero(t3);
             for(int i=0;i<t1.size();i++){
                 temporal=t1.get(i)+aux.get(i)+t3.get(i)+acarreo;
                 int dig;
@@ -374,8 +332,6 @@ public class CalculoSimbolico {
             }
             aux2.add( acarreo);
 
-                        System.out.print("\n                                                            m="+m+"result=");
-                        mostrar_numero(aux2); 
             return aux2;
         }
    }
@@ -410,7 +366,169 @@ public class CalculoSimbolico {
        
    }
    
+   public static ArrayList<Integer> guarda_vector_numeros_primos(ArrayList<Integer> num1, ArrayList<Integer> num2){
+       ArrayList<Integer> vector_primos_aux=new ArrayList<>();
+       
+      FileReader entrada=null;
+      StringBuffer str=new StringBuffer();
+
+      try  {
+            entrada=new FileReader("primos.txt");
+            int c;
+            while((c=entrada.read())!=-1){
+                str.append((char)c);                
+            }
+       }catch (IOException ex) {
+            System.out.println("\nNo se ha encontrado el archivo de texto que contiene los datos del problema.");
+       }
+       
+       for(int i=str.length()-5;i>=0;i=i-7){       
+           String num_primo=new String();
+           num_primo=str.substring(i, i+5);
+          
+           vector_primos_aux.add(Integer.parseInt(num_primo));
+       }
+       
+       int tam_vector_primos=0;
+       tam_vector_primos=num1.size()+num2.size();
+       ArrayList<Integer> vector_primos=new ArrayList<>();       
+       for(int i=0;i<tam_vector_primos;i++){
+           vector_primos.add(vector_primos_aux.get(i));
+       }
+       
+       return vector_primos;
+   }
+   public static ArrayList<Integer> cambio_base_modular(ArrayList<Integer> num, ArrayList<Integer> primos){
+        ArrayList<Integer> num_modular=new ArrayList<>();
+        
+        for(int i=0;i<primos.size();i++){
+            
+            long aux=0;
+            for(int j=num.size()-1;j>=0;j--){
+                aux=(getUnsignedInt(num.get(j)*(int) Math.pow(65536,j))+aux)%primos.get(i);
+            }
+            num_modular.add((int) aux);
+        }
+        
+        return num_modular;
+   }
+   public static ArrayList<Integer> multiplicacion_modular(ArrayList<Integer> num1, ArrayList<Integer> num2, ArrayList<Integer> primos){
+        ArrayList<Integer> result=new ArrayList<>();
+        
+        for(int i=0;i<primos.size();i++){
+            long aux;
+            aux=(getUnsignedInt(num1.get(i)* num2.get(i)))%primos.get(i);
+            
+            result.add((int) aux);
+        }        
+        
+        return result;
+   }
+   public static ArrayList<ArrayList<Integer>> calcular_c_mult_modular( ArrayList<Integer> primos_relativos){
+       ArrayList<ArrayList<Integer>> c=new ArrayList<>();
+       
+       for(int i=0;i<=primos_relativos.size()-2;i++){
+           c.add(new ArrayList<Integer>());
+           for(int k=0;k<=i;k++)
+                c.get(i).add(0);
+           for(int j=i+1;j<=primos_relativos.size()-1;j++){
+               //busco cij :  cij*mi%mj=1
+               boolean valido=false;
+               for(int k=0;k<=primos_relativos.get(j) && valido==false;k++){
+                   if((getUnsignedInt(k*primos_relativos.get(i))%primos_relativos.get(j))==1){
+                       valido=true;
+                       c.get(i).add(k);
+                   }
+               }
+           }
+       }
+       return c;
+   }
    
+   public static ArrayList<ArrayList<Integer>> alg_euclides( ArrayList<Integer> primos_relativos){
+       ArrayList<ArrayList<Integer>> c=new ArrayList<>();
+       
+       for(int i=0;i<=primos_relativos.size()-2;i++){
+           c.add(new ArrayList<Integer>());
+           for(int k=0;k<=i;k++)
+                c.get(i).add(0);
+           for(int j=i+1;j<primos_relativos.size();j++){
+               ArrayList<Integer> a=new ArrayList<>();
+               ArrayList<Integer> b=new ArrayList<>();
+               ArrayList<Integer> q=new ArrayList<>();
+               ArrayList<Integer> r=new ArrayList<>();
+               ArrayList<Integer> u=new ArrayList<>();
+
+               for(int k=0;k<2;k++){
+                   a.add(0);
+                   b.add(0);
+                   q.add(0);
+                   r.add(0);
+               }
+               u.add(1);
+               u.add(0);
+               a.add(primos_relativos.get(i));
+               b.add(primos_relativos.get(j));
+               boolean encontrado=false;
+               for(int k=2;k<primos_relativos.get(j) && encontrado==false;k++){
+                   int aux;
+                   aux=new Double (a.get(k)/b.get(k)).intValue();
+                   q.add( aux );
+                   r.add( a.get(k)-b.get(k)*q.get(k) );
+                   u.add( u.get(k-2)-q.get(k)*u.get(k-1));
+                   if(r.get(k)==1){
+                       encontrado=true;
+                       if(u.get(k)<0){
+                           u.set(k, u.get(k)+b.get(2));
+                       }
+                       c.get(i).add(u.get(k));
+                   }
+                   a.add(b.get(k));
+                   b.add(r.get(k));
+               }
+           }
+       }
+       return c;
+   }   
+   public static ArrayList<Integer> pasar_base_mod_a_normal(ArrayList<Integer> x, ArrayList<ArrayList<Integer>> cij, ArrayList<Integer> m){
+       ArrayList<Integer> y=new ArrayList<>();
+       
+       long aux=0;
+       
+       aux=x.get(0)%m.get(0);
+       y.add((int) aux);  
+       for(int i=1;i<m.size();i++){
+           aux=x.get(i);                           
+           for(int j=0;j<i;j++){
+               aux=getUnsignedInt( (int) (aux-y.get(j))*cij.get(j).get(i))%m.get(i);
+           }
+           y.add((int) aux);
+       }
+       System.out.print("\n---------------------------------------------Salida y:   ");
+       mostrar_numero(y);
+       
+       ArrayList<Integer> dig=new ArrayList<>();
+       dig.add(y.get(0));
+       for(int i=1;i<m.size();i++){
+           ArrayList<Integer> mult_aux=new ArrayList<>();
+           ArrayList<Integer> aux1=new ArrayList<>();
+           ArrayList<Integer> aux2=new ArrayList<>();
+           aux1.add(y.get(i));
+           aux2.add(m.get(0));
+           mult_aux=mult_escuela(aux1, aux2);
+           for(int j=1;j<i;j++){
+               ArrayList<Integer> aux3=new ArrayList<>();
+               aux3.add(m.get(j));
+               mult_aux=mult_escuela(mult_aux, aux3);
+           }
+           dig=suma_escuela(dig,mult_aux);
+           System.out.print("\nDig="+dig);
+       }
+       System.out.print("\n         Dig final=  ");
+       mostrar_numero(dig);
+       
+       return dig;
+   }
    public static void main(String[] args) {
         ArrayList<Integer> vector_enteros=new ArrayList<>();
         ArrayList<Integer> vector_enteros2=new ArrayList<>();
@@ -421,70 +539,96 @@ public class CalculoSimbolico {
         //numChar=leer_numero_hexadecimal();
         System.out.print("\nINTRODUCE OTRO NUMERO\n");
         //numChar2=leer_numero_hexadecimal();
-        for(int i=0;i<30;i++)
+        
+        numChar.add('1');
+        numChar.add('0');
+        numChar.add('0');
+        numChar.add('0');
+        numChar.add('0');
+        numChar.add('1');
+        numChar2.add('1');
+        numChar2.add('2');
+        numChar2.add('2');
+        numChar2.add('2');
+        numChar2.add('2');
+        /*
+        for(int i=0;i<8;i++)
             numChar.add('F');
-        for(int i=0;i<30;i++)
-            numChar2.add('F');
+        for(int i=0;i<14;i++)
+            numChar2.add('F');*/
         vector_enteros=cambiaBase(numChar);
         vector_enteros2=cambiaBase(numChar2);
         
+        System.out.print("\nNum1:   ");      
         mostrar_numero(vector_enteros);
+        System.out.print("\nNum2:   ");      
         mostrar_numero(vector_enteros2);
         
+                ArrayList<Integer> primos_relativos=new ArrayList<Integer>();
+        primos_relativos=guarda_vector_numeros_primos(vector_enteros, vector_enteros2);
+        System.out.print("\nPrimos:   ");        
+        mostrar_numero(primos_relativos);       
+
+                 ArrayList<Integer> num1_base_mod=new ArrayList<Integer>();
+        num1_base_mod=cambio_base_modular(vector_enteros, primos_relativos);
+        System.out.print("\num1_base_mod:   ");        
+        mostrar_numero(num1_base_mod); 
+                 ArrayList<Integer> num2_base_mod=new ArrayList<Integer>();
+        num2_base_mod=cambio_base_modular(vector_enteros2, primos_relativos);
+        System.out.print("\num2_base_mod:   ");        
+        mostrar_numero(num2_base_mod); 
+        
+                  ArrayList<Integer> result_modular=new ArrayList<Integer>();
+        result_modular=multiplicacion_modular(num1_base_mod, num2_base_mod, primos_relativos);
+        System.out.print("\nresult_modular:   ");        
+        mostrar_numero(result_modular);        
+        
+                          ArrayList<ArrayList<Integer>> cij=new ArrayList<ArrayList<Integer>>();
+        cij=calcular_c_mult_modular(primos_relativos);
+        System.out.print("\ncij:   ");       
+        for(int i=0;i<cij.size();i++){
+            System.out.print("\n "); 
+                   mostrar_numero(cij.get(i));   
+        }
 
         
+                           ArrayList<Integer> result_mod=new ArrayList<Integer>();
+        result_mod=pasar_base_mod_a_normal(result_modular, cij, primos_relativos);
+        System.out.print("\nresult_modular:                                     ");  
+        mostrar_numero(result_mod);
+        
+                ArrayList<Integer> result_mult1=new ArrayList<Integer>();
+        result_mult1=mult_escuela(vector_enteros, vector_enteros2);
+                elimina_ceros_izq(result_mult1);
+        System.out.print("\nResultado de multiplicar los dos numeros ESCUELA:   ");        
+        mostrar_numero(result_mult1);  
+   /*   
         ArrayList<Integer> result_mult2=new ArrayList<Integer>();
         ArrayList<Integer> result=new ArrayList<>();
         result_mult2=calcula_m_karatsuba(vector_enteros, vector_enteros2);
         System.out.print("\nResultado de multiplicar los dos numeros KARATSUBA: ");
+                elimina_ceros_izq(result_mult2);
         mostrar_numero(result_mult2);
         
-        ArrayList<Integer> result_mult1=new ArrayList<Integer>();
-        result_mult1=mult_escuela(vector_enteros, vector_enteros2);
-        System.out.print("\nResultado de multiplicar los dos numeros ESCUELA: ");        
-        mostrar_numero(result_mult1);          
-   }
-   
-   
-   
-   
-    /*
-    public static void main(String[] args) {
-        ArrayList<Integer> vector_enteros=new ArrayList<Integer>();
-        ArrayList<Integer> vector_enteros2=new ArrayList<Integer>();
-        ArrayList<Character> numChar=new ArrayList<Character>();
-        ArrayList<Character> numChar2=new ArrayList<Character>();
-        
+ 
 
-        System.out.print("\nINTRODUCE UN NUMERO\n");
-        numChar=leer_numero_hexadecimal();
-        System.out.print("\nINTRODUCE OTRO NUMERO\n");
-        numChar2=leer_numero_hexadecimal();
-
-        vector_enteros=cambiaBase(numChar);
-        vector_enteros2=cambiaBase(numChar2);
+        boolean iguales=true;
+        for(int i=0;i<result_mult2.size();i++){
+            if(result_mult2.get(i).intValue()!=result_mult1.get(i).intValue()){
+                iguales=false;
+            }
+        }
+        if(result_mult1.size()!=result_mult2.size())
+            iguales=false;
         
-        mostrar_numero(vector_enteros);
-        mostrar_numero(vector_enteros2);
-        
-        ArrayList<Integer> result_mult=new ArrayList<Integer>();
-        result_mult=mult_escuela(vector_enteros, vector_enteros2);
-        System.out.print("\nResultado de multiplicar los dos numeros:");        
-        mostrar_numero(result_mult);  
-        
-      
-        ArrayList<Integer> result_suma=new ArrayList<Integer>();
-        result_suma=suma_escuela(vector_enteros, vector_enteros2);
-        System.out.print("\nResultado de sumar los dos numeros:");        
-        mostrar_numero(result_suma);
+        if(iguales==false){
+            System.out.print("\nMalllllllllllll-----------------");
+        }else
+            System.out.print("\nBien !!!!!!!");
+         * */
          
-      
-       
-        ArrayList<Integer> result_resta=new ArrayList<Integer>();
-        result_resta=resta_escuela(vector_enteros, vector_enteros2);
-        System.out.print("\nResultado de restar los dos numeros:");        
-        mostrar_numero(result_resta);  
-       */
-
-    
+   }
+        
+   
+   
 }
