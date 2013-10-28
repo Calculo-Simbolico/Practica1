@@ -15,6 +15,15 @@ import java.math.BigInteger;
 public class CalculoSimbolico {
 
     
+    /**
+     * Convierte el ArrayList de entrada que es un numero en Hexadecimal a un número en base 16^2 de la siguiente forma:
+     * 1.Recorre el ArrayList de entrada  y convierte cada 4 cifras de Hexadecimal en un dígito de nuestro numero en base
+     * 2^16, cada posicion contendra un numero 'num_i'  menor que 16^4=65536 el cual multiplica a la base elevada a la 
+     * posicion que ocupa, o sea: num_0*65536^0 + num_1*65536^1 + num_2*65536^2.....num_list.size*65536^list.size.
+     * 2.Devuelve un ArrayList cuyas posiciones contienen cada uno de los dígitos del número en base 2^16.
+     * @param num cadena de entrada que contiene el numero en Hexadecimal que se introduce
+     * @return numeroInt ArrayList con el numero en base 2^16, en cada una de las posiciones hay un dígito del número.
+    */
     public static ArrayList<Integer> cambiaBase(ArrayList<Character> num){
         int digito=0;
         ArrayList<Integer> numeroInt=new ArrayList<Integer>();
@@ -46,7 +55,11 @@ public class CalculoSimbolico {
         return numeroInt;
    }
     
-    
+   
+   /**
+     * Lee de un fichero de entrada o de la entrada estándar un número en hexadecimal el cual después de transformarse a base 
+     * 2^16 será usado para las operaciones correspondientes.
+   */
    public static ArrayList<Character> leer_numero_hexadecimal(){
                InputStreamReader isr = new InputStreamReader(System.in);
                 BufferedReader br = new BufferedReader (isr); 
@@ -66,12 +79,27 @@ public class CalculoSimbolico {
    }
    
    
+   /**
+    * Imprime el numero obtenido del ArrayList que se le pasa por parametro empezando por el final.
+    * @param vector_enteros ArrayList el cual se  va a mostrar por pantalla.
+   */
    public static void mostrar_numero(ArrayList<Integer> vector_enteros){
         for(int i=0;i<vector_enteros.size();i++)
             System.out.print(" "+vector_enteros.get(vector_enteros.size()-1-i));
    }
    
    
+   /**
+     * Suma los dos números en base 2^16 pasados por parámetro mediante el algoritmo suma_escuela siguiendo los siguientes pasos:
+     * 1.Se comprueba el número de dígitos de ambos números y se completa con ceros a la izquierda el de menor tamaño hasta que
+     * este alcance un número de digitos igual al otro número. Si los dos números son iguales no se hace nada.
+     * 2.Ir recorriendo los dos números desde el digito menos significativo hasta el mas significativo e ir sumando ambos dígitos
+     * introduciendo en el ArrayList 'result' el digito con el resultado de hacer modulo base 2^16 de la suma, añadiendo además
+     * el acarreo, el cual se obtiene del cociente de dividir la suma de ambos digitos entre la base 2^16.
+     * @param num1 ArrayList con el primer número en base 2^16 que se va a sumar mediante suma_escuela.
+     * @param num2 ArrayList con el segundo número en base 2^16 que se va a sumar mediante suma_escuela.
+     * @return result ArrayList con el resultado de sumar los dos número en base 2^16 mediante suma_escuela. 
+   */
    public static ArrayList<Integer> suma_escuela(ArrayList<Integer> num1, ArrayList<Integer> num2){
         ArrayList<Integer> result=new ArrayList<Integer>();
         int num_dig;   
@@ -102,6 +130,17 @@ public class CalculoSimbolico {
    } 
    
    
+   /**
+     * Multiplica los dos números que se pasan como parámetro por medio del algoritmo mult_escuela siguiendo los siguientes pasos:
+     * 1.Se añaden ceros en un número de posiciones de 'result' igual al tamaños del número que se va a multiplcar.
+     * 2.Se va recorriendo el primer y segundo número multiplicando todos los factores de num1 por cada uno de los factores de
+     * num2 y almacenando en 'result' el resultado de esta multiplicación haciendo modulo con la base 2^16 y sumando también el 
+     * acarreo.
+     * 3.El acarreo se calcula como el cociente del resultado de la multiplicación entre la base 2^16.
+     * @param num1 ArrayList con el primer número en base 2^16 que se va a multiplicar mediante mult_escuela.
+     * @param num2 ArrayList con el segundo número en base 2^16 que se va a multiplicar mediante mult_escuela.
+     * @return result ArrayList con el resultado de multiplicar  los dos número en base 2^16 mediante mult_escuela.
+   */
    public static ArrayList<Integer> mult_escuela(ArrayList<Integer> num1, ArrayList<Integer> num2){
         ArrayList<Integer> result=new ArrayList<Integer>();
 
@@ -124,6 +163,11 @@ public class CalculoSimbolico {
    }
    
    
+   /**
+    * Elimina los ceros de la izquierda que se han introducido durante las operaciones como digitos nulos.
+    * @param num1 ArrayList el cual se va a modificar quitandole los ceros.
+    * @return num1 el ArrayList una vez eliminados los ceros 
+    */
    public static ArrayList<Integer> elimina_ceros_izq(ArrayList<Integer> num1){
        int i=num1.size()-1;
        while(num1.get(i)==0 && num1.size()!=1){
@@ -134,6 +178,18 @@ public class CalculoSimbolico {
    }
    
    
+   /**
+     * Resta los dos números en base 2^16 pasados por parámetro mediante el algoritmo resta_escuela siguiendo los siguientes pasos:
+     * 1.Se comprueba el número de dígitos de ambos números y se completa con ceros a la izquierda el de menor tamaño hasta que
+     * este alcance un número de digitos igual al otro número.
+     * 2.Ir recorriendo los dos números desde el digito menos significativo hasta el mas significativo e ir restando ambos
+     * introduciendo en el ArrayList 'result' un digito con el resultado de hacer modulo base 2^16 de la resta de ambos digitos.
+     * 3.El acarreo, el cual será siempre igual a 1 se sumará al siguiente digito del sustraendo antes de realizar la resta de
+     * ambos dígitos.
+     * @param num1 ArrayList con el primer número en base 2^16 que se va a restar mediante resta_escuela (minuendo). 
+     * @param num2 ArrayList con el segundo número en base 2^16 que se va a restar mediante resta_escuela (sustraendo). 
+     * @return result ArrayList con el resultado de restar los dos número en base 2^16 mediante resta_escuela (diferencia). 
+   */
    public static ArrayList<Integer> resta_escuela(ArrayList<Integer> num1, ArrayList<Integer> num2){        
         ArrayList<Integer> result=new ArrayList<>();
         int acarreo = 0, temporal=0;
@@ -202,6 +258,21 @@ public class CalculoSimbolico {
         return x & 0x00000000ffffffffL;
     } 
     
+    
+    /**
+     * Hace una llamada a mult_karatsuba para obtener el resultado de multiplicar los dos números en base 2^16 pasados 
+     * por parámetro, además antes de esto obtiene el valor de m. Para todo ello se siguen los siguientes pasos:
+     * 1.Se calcula cual de los dos números tiene un número mayor de dígitos.
+     * 2.Se calcula m siendo su valor el logaritmo en base 2 del numero de digitos de la cifra que se va a multiplicar
+     * que sea mayor o un número mayor a esta.
+     * 3.Completar los dos numeros con ceros hasta llegar al tamaño de m.
+     * 4.Hacer una llamada a mult_karatsuba con los dos números ya completados con ceros y el valor de m obtenido.
+     * @param num1 ArrayList con el primer número en base 2^16 que se va a multiplicar mediante mult_karatsuba pasandose
+     * como parámetro desde esta función a mult_karatsuba en la cual se realizará la multiplicación.
+     * @param num2 ArrayList con el segundo número en base 2^16 que se va a multiplicar mediante mult_karatsuba pasandose
+     * como parámetro desde esta función a mult_karatsuba en la cual se realizará la multiplicación. 
+     * @return result ArrayList con el resultado de multiplicar  los dos número en base 2^16 mediante mult_karatsuba. 
+    */
     public static ArrayList<Integer> calcula_m_karatsuba(ArrayList<Integer> num1, ArrayList<Integer> num2){
         int num_dig=0, num_mayor;
         ArrayList<Integer> vector_enteros=new ArrayList<>();
@@ -228,6 +299,21 @@ public class CalculoSimbolico {
         elimina_ceros_izq(result);
         return result;
     }
+    
+    
+    /**
+     * Multiplica los dos números que se pasan como parámetro por medio del algoritmo mult_karatsuba siguiendo los siguientes pasos:
+     * 1.El algoritmo es un algoritmo recursivo por tanto tiene un caso base para cuando m es cero en el cual se almacena en el
+     * resultado el digito y el acarreo de multiplicar los dos  digitos menos significativos de a y de b.
+     * 2.Si no se ha entrado en el caso base se almacenan en a0 y a1 las partes menos significativa y mas significativa 
+     * respectivamente de a haciendo los mismo para b0 y b1 para b.
+     * 3.Se calculan t1, t2 y t3 haciendo tres llamadas recursivas a la función con sus correspondientes parámetros.
+     * 4.Se calcula el resultado final el cual se devuelve recursivamente a las llamadas anteriores.
+     * @param a ArrayList con el primer número en base 2^16 que se va a multiplicar mediante mult_karatsuba.
+     * @param b ArrayList con el segundo número en base 2^16 que se va a multiplicar mediante mult_karatsuba.
+     * @param m valor que va a servir para reducir hasta un caso base de cuando m sea cero.
+     * @return aux2 ArrayList con el resultado de multiplicar  los dos número en base 2^16 mediante mult_karatsuba.
+    */
     public static ArrayList<Integer> mult_karatsuba(ArrayList<Integer> a, ArrayList<Integer> b, int m){
 
         Integer acarreo=0;
@@ -338,77 +424,47 @@ public class CalculoSimbolico {
    }
     
     
-    
+    /**
+     * Copia en el ArrayList 'parte' los digitos de la parte menos significativa del ArrayList 'num', es decir
+     * desde la posición 0 hasta la mitad del tamaño que tenga 'num' menos 1 .
+     * @param parte ArrayList con la parte menos significativa del número. 
+     * @param num ArrayList con el número que se va a dividir.
+   */
     public static void digitos_menos_sinificativos(ArrayList<Integer> parte, ArrayList<Integer> num){           
        for(int i=0;i<num.size()/2;i++){
            parte.add(num.get(i));
        }
    }
     
-    
+   
+   /**
+     * Copia en el ArrayList 'parte' los digitos de la parte mas significativa del ArrayList 'num', es decir
+     * desde  la mitad del tamaño que tenga 'num' hasta la última posición.
+     * @param parte ArrayList con la parte mas significativa del número. 
+     * @param num ArrayList con el número que se va a dividir.
+   */
    public static void digitos_mas_sinificativos(ArrayList<Integer> parte, ArrayList<Integer> num){         
        for(int i=num.size()/2;i<num.size();i++){
            parte.add(num.get(i));
        }
    }
+   
+   /**
+    * Muestra por pantalla los digitos de un número de izquierda a derecha.
+    * @param vector_enteros ArrayList que se va a mostrar.
+   */
    public static void mostrar_numero_de_izq_dcha(ArrayList<Integer> vector_enteros){
         for(int i=0;i<vector_enteros.size();i++)
             System.out.print(" "+vector_enteros.get(i));
-   }   
+   } 
    
-   public static ArrayList<Integer> mult_modular(ArrayList<Integer> a, ArrayList<Integer> b){
-       ArrayList<Integer> result=new ArrayList<>();
-       ArrayList<Integer> mult=new ArrayList<>();
-       ArrayList<Integer> a_m1=new ArrayList<>();
-       ArrayList<Integer> a_m2=new ArrayList<>();
-       ArrayList<Integer> a_m3=new ArrayList<>();
-       ArrayList<Integer> a_m4=new ArrayList<>();
-       ArrayList<Integer> b_m1=new ArrayList<>();
-       ArrayList<Integer> b_m2=new ArrayList<>();
-       ArrayList<Integer> b_m3=new ArrayList<>();
-       ArrayList<Integer> b_m4=new ArrayList<>();
-       ArrayList<Integer> x1=new ArrayList<>();
-       ArrayList<Integer> x2=new ArrayList<>();
-       ArrayList<Integer> x3=new ArrayList<>();
-       ArrayList<Integer> x4=new ArrayList<>();
-       ArrayList<Integer> y1=new ArrayList<>();
-       ArrayList<Integer> y2=new ArrayList<>();
-       ArrayList<Integer> y3=new ArrayList<>();
-       ArrayList<Integer> y4=new ArrayList<>();
-       //Los 4 numeros primos inmediatos menores que la base 2^16=65536 
-       Integer m1=65479, m2=65497, m3=65519, m4=65521;
-       //C_ij´s calculados on SAGE
-       Integer c_12=25471, c_13=63881, c_14=1560, c_23=44672, c_24=2730, c_34=32760;
 
-       a_m1=hacer_modulo_m(a, m1);
-       a_m2=hacer_modulo_m(a, m2);
-       a_m3=hacer_modulo_m(a, m3);
-       a_m4=hacer_modulo_m(a, m4);
-       b_m1=hacer_modulo_m(b, m1);
-       b_m2=hacer_modulo_m(b, m2);
-       b_m3=hacer_modulo_m(b, m3);
-       b_m4=hacer_modulo_m(b, m4);
-       
-       
-       
-       return result; 
-   }
-   
-   
-   public static ArrayList<Integer> hacer_modulo_m(ArrayList<Integer> num, Integer m){
-       ArrayList<Integer> result=new ArrayList<>();
-       Integer temporal, acarreo=0, digito;
-       
-       for(int i=0;i<num.size();i++){
-            temporal=num.get(i) + acarreo;
-            digito =  temporal % m;
-            acarreo= temporal/m;
-            result.add(digito);
-       }
-       return result;
-       
-   }
-   
+   /**
+    * Lee de un fichero los números primos que serán usados en las operaciones correspondientes.
+    * @param num1 ArrayList usado en los cálculos.
+    * @param num1 ArrayList usado en los cálculos.
+    * @return vector_primos ArrayList con los primos obtenidos,
+    */
    public static ArrayList<Integer> guarda_vector_numeros_primos(ArrayList<Integer> num1, ArrayList<Integer> num2){
        ArrayList<Integer> vector_primos_aux=new ArrayList<>();
        
@@ -441,6 +497,14 @@ public class CalculoSimbolico {
        
        return vector_primos;
    }
+   
+   
+   /**
+    * Pasa cada uno de los números de 'num' a su correspondiente valor haciendo módulo con un número primo el cual hace de base.
+    * @param num ArrayList con los números con los cuales se va a hacer módulos con los correspondientes números primos.
+    * @param primos ArrayList con los números que se van a usar como bases.
+    * @return num_modular ArrayList 
+    */
    public static ArrayList<Integer> cambio_base_modular(ArrayList<Integer> num, ArrayList<Integer> primos){
         ArrayList<Integer> num_modular=new ArrayList<>();
         
@@ -460,6 +524,16 @@ public class CalculoSimbolico {
         
         return num_modular;
    }
+   
+   
+   /**
+     * Multiplica los dos números que se pasan como parámetro haciendo modulo con su correspondiente número primo.
+     * @param num1 ArrayList con el primer número que se va a multiplicar .
+     * @param num2 ArrayList con el segundo número que se va a multiplicar.
+     * @param primos ArrayList con los números primos los cuales de van a usar como bases para hacer el módulo.
+     * @return result ArrayList con el resultado de multiplicar  los dos número en base 2^16 módulo con su correspondiente 
+     * número primo.
+   */
    public static ArrayList<Integer> multiplicacion_modular(ArrayList<Integer> num1, ArrayList<Integer> num2, ArrayList<Integer> primos){
         ArrayList<Integer> result=new ArrayList<>();
         
@@ -472,6 +546,13 @@ public class CalculoSimbolico {
         
         return result;
    }
+   
+   
+   /**
+    * Calcula una matriz con los Cij´s correspondientes a los primos relativos que se pasan como parámetro.
+    * @param primos_relativos ArrayList con los números primos que se van a usar en los cálculos.
+    * @returnc c <ArrayList<Integer>> o sea una matriz con los correspondientes Cij´s calculados. 
+    */
    public static ArrayList<ArrayList<Integer>> calcular_c_mult_modular( ArrayList<Integer> primos_relativos){
        ArrayList<ArrayList<Integer>> c=new ArrayList<>();
        
@@ -493,6 +574,13 @@ public class CalculoSimbolico {
        return c;
    }
    
+   
+   
+   /**
+    * Calcula mediante el algortimo extendido de Euclides los inversos de los primos relativos que se le pasan por parámetro.
+    * @param primos_relativos ArrayList con los números a los cuales se les va a calcular su inverso.
+    * @return c <ArrayList<Integer>> o sea una matriz con los correspondientes inversos calculados.
+    */
    public static ArrayList<ArrayList<Integer>> alg_euclides( ArrayList<Integer> primos_relativos){
        ArrayList<ArrayList<Integer>> c=new ArrayList<>();
        
@@ -537,7 +625,13 @@ public class CalculoSimbolico {
            }
        }
        return c;
-   }   
+   } 
+   
+   
+   /**
+    * Muestra el número que se le pasa por parámetro en base decimal.
+    * @param vector_enteros ArrayList con el número que se va a mostrar. 
+    */
    public static void mostrar_numero_base_dec(ArrayList<Integer> vector_enteros){
         for(int i=0;i<vector_enteros.size();i++){
             System.out.print("+"+vector_enteros.get(vector_enteros.size()-1-i));
@@ -546,6 +640,15 @@ public class CalculoSimbolico {
             }
         }
    }
+   
+   
+   /**
+    * Pasa un número de su base a la base normal que se está usando para las operaciones. 
+    * @param x ArrayList con los Xi´s que se van a usar en las operaciones.
+    * @param cij ArrayList<ArrayList<Integer>> o sea matriz con los Cij´s que se van a usar el las operaciones.
+    * @param m ArrayList con los Mi´s que se van a usar en las operaciones.
+    * @return solucion ArrayList con el resultado de pasar a base normal modular.
+    */
    public static ArrayList<Integer> pasar_base_mod_a_normal(ArrayList<Integer> x, ArrayList<ArrayList<Integer>> cij, ArrayList<Integer> m){
        ArrayList<Integer> y=new ArrayList<>();
        
@@ -596,8 +699,13 @@ public class CalculoSimbolico {
        
        return solucion;
    }
+   
+   /**
+    * Lee un número desde la entrada estándar
+    * @return num número que se ha leido.
+    */
     public static int leer_numero(){
-               InputStreamReader isr = new InputStreamReader(System.in);
+                InputStreamReader isr = new InputStreamReader(System.in);
                 BufferedReader br = new BufferedReader (isr); 
                 String input=new String();
                 int num;
@@ -609,6 +717,8 @@ public class CalculoSimbolico {
         num=Integer.parseInt(input);
         return num;
    }  
+    
+    
     public static void main(String[] args) {
 
         int salir=1;
@@ -904,10 +1014,7 @@ public class CalculoSimbolico {
             System.out.print("\nBien !!!!!!!");
          * */
          
-   }
-        
-   
-   
+   } 
 }
  
 
