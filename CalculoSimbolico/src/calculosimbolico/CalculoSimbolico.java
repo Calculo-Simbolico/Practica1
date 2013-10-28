@@ -433,7 +433,7 @@ public class CalculoSimbolico {
        }
        
        int tam_vector_primos=0;
-       tam_vector_primos=num1.size()+num2.size();
+       tam_vector_primos=new Double (16*(num1.size()+num2.size())/15).intValue()+1;
        ArrayList<Integer> vector_primos=new ArrayList<>();       
        for(int i=0;i<tam_vector_primos;i++){
            vector_primos.add(vector_primos_aux.get(i));
@@ -552,13 +552,10 @@ public class CalculoSimbolico {
        long aux=0;
        
        aux=x.get(0)%m.get(0);
-       System.out.print("\n        y0="+aux);
        y.add((int) aux);  
        for(int i=1;i<m.size();i++){       
            aux=x.get(i);                
-                                        System.out.print("\n i="+i);  
            for(int j=0;j<i;j++){
-                                        System.out.print("\n        y=(("+aux+"-"+y.get(j)+")*"+cij.get(j).get(i)+")%"+m.get(i)); 
                boolean resta_neg=false;
                if(aux<y.get(j)){
                    resta_neg=true;
@@ -572,26 +569,12 @@ public class CalculoSimbolico {
                    aux=getUnsignedInt( (int) (aux-y.get(j))*cij.get(j).get(i));
                    aux=aux%m.get(i);
                }
-           }
-                                       System.out.print("\n ------------Y"+i+"  Y="+aux);           
+           }         
            y.add((int) aux);
-       }
-
-                                           System.out.print("\n                                 cij:   ");       
-                                    for(int i=0;i<cij.size();i++){
-                                        System.out.print("\n                                             "); 
-                                               mostrar_numero_de_izq_dcha(cij.get(i));   
-                                    }
-                                   System.out.print("\n---------------------------------------------Salida x:        ");
-                                   mostrar_numero_de_izq_dcha(x);
-                                   System.out.print("\n---------------------------------------------Salida primos:   ");
-                                   mostrar_numero_de_izq_dcha(m);
-                                   System.out.print("\n---------------------------------------------Salida y:        ");                                   
-                                   mostrar_numero_de_izq_dcha(y);       
+       }       
        
        ArrayList<Integer> solucion=new ArrayList<>();
        solucion.add(y.get(0));
-       System.out.print("\n------Dig=  ");
        mostrar_numero(solucion);
        for(int i=1;i<m.size();i++){
            ArrayList<Integer> mult_aux=new ArrayList<>();
@@ -600,20 +583,15 @@ public class CalculoSimbolico {
            aux1.add(y.get(i));
            aux2.add(m.get(0));
            mult_aux=mult_escuela(aux1, aux2);
-                  System.out.print("\n      ="+y.get(i)+"*"+m.get(0));
            for(int j=1;j<i;j++){
-               System.out.print("*"+m.get(j));
                ArrayList<Integer> aux3=new ArrayList<>();
                aux3.add(m.get(j));
                mult_aux=mult_escuela(mult_aux, aux3);
            }
-           mostrar_numero_base_dec(solucion);
            solucion=suma_escuela(solucion,mult_aux);
-       System.out.print("\n------Dig=  ");
        mostrar_numero(solucion);
        }
        
-       System.out.print("\n         Dig final=  ");
        mostrar_numero(solucion);
        
        return solucion;
@@ -778,8 +756,9 @@ public class CalculoSimbolico {
                 System.out.print("\nResultado de multiplicar los dos numeros KARATSUBA: ");
                 mostrar_numero(result_mult2);
                 tiempo=time2-time1;
-                System.out.print("\nTiempo empleado en la multiplicacion Karatsuba:   "+tiempo+" ms");  
-                
+                System.out.print("\nTiempo empleado en la multiplicacion Karatsuba:   "+tiempo+" ms");
+                elimina_ceros_izq(vector_enteros);
+                elimina_ceros_izq(vector_enteros2);
                 ArrayList<Integer> primos_relativos=new ArrayList<Integer>();
                 primos_relativos=guarda_vector_numeros_primos(vector_enteros, vector_enteros2);
 
@@ -789,7 +768,9 @@ public class CalculoSimbolico {
                 time1=System.currentTimeMillis();
                 num1_base_mod=cambio_base_modular(vector_enteros, primos_relativos);                
                 num2_base_mod=cambio_base_modular(vector_enteros2, primos_relativos);
-                result_modular=multiplicacion_modular(num1_base_mod, num2_base_mod, primos_relativos);                
+                result_modular=multiplicacion_modular(num1_base_mod, num2_base_mod, primos_relativos); 
+                System.out.print("\nResultado de la multiplicacion modular   ");        
+                mostrar_numero(result_modular);
                 time2=System.currentTimeMillis();
                 tiempo=time2-time1;
 
