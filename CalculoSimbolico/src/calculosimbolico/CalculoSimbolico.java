@@ -678,7 +678,6 @@ public class CalculoSimbolico {
        
        ArrayList<Integer> solucion=new ArrayList<>();
        solucion.add(y.get(0));
-       mostrar_numero(solucion);
        for(int i=1;i<m.size();i++){
            ArrayList<Integer> mult_aux=new ArrayList<>();
            ArrayList<Integer> aux1=new ArrayList<>();
@@ -692,10 +691,7 @@ public class CalculoSimbolico {
                mult_aux=mult_escuela(mult_aux, aux3);
            }
            solucion=suma_escuela(solucion,mult_aux);
-       mostrar_numero(solucion);
        }
-       
-       mostrar_numero(solucion);
        
        return solucion;
    }
@@ -720,7 +716,70 @@ public class CalculoSimbolico {
     
     
     public static void main(String[] args) {
+        double tiempo=0;
+        for(int k=0;k<30;k++){
+            int num_dig=1;
+            int num_dig2=1;
+            
+            ArrayList<Integer> vector_enteros=new ArrayList<>();
+            ArrayList<Integer> vector_enteros2=new ArrayList<>();
+            ArrayList<Character> numChar=new ArrayList<>();
+            ArrayList<Character> numChar2=new ArrayList<>();
+                for(int i=0;i<num_dig;i++){
+                    int dig= new Double(Math.random()*16).intValue();
+                    char dig_char='x';
+                    if(dig<10){
+                        dig_char= (new Integer (dig).toString()).charAt(0);
+                    }else if(dig==10){
+                        dig_char='a';
+                    }else if(dig==11){
+                        dig_char='b';
+                    }else if(dig==12){
+                        dig_char='c';
+                    }else if(dig==13){
+                        dig_char='d';
+                    }else if(dig==14){
+                        dig_char='e';
+                    }else if(dig==15){
+                        dig_char='f';
+                    }
+                    numChar.add(dig_char);
+                }
+                for(int i=0;i<num_dig2;i++){
+                    int dig= new Double(Math.random()*16).intValue();
+                    char dig_char='x';
+                    if(dig<10){
+                        dig_char= (new Integer (dig).toString()).charAt(0);
+                    }else if(dig==10){
+                        dig_char='a';
+                    }else if(dig==11){
+                        dig_char='b';
+                    }else if(dig==12){
+                        dig_char='c';
+                    }else if(dig==13){
+                        dig_char='d';
+                    }else if(dig==14){
+                        dig_char='e';
+                    }else if(dig==15){
+                        dig_char='f';
+                    }
+                    numChar2.add(dig_char);
+                }    
+                vector_enteros=cambiaBase(numChar);
+                vector_enteros2=cambiaBase(numChar2);
+                
+                ArrayList<Integer> result_mult1=new ArrayList<Integer>();                
+                double time1=System.currentTimeMillis();
+                for(int p=0;p<10000;p++)
+                    result_mult1=mult_escuela(vector_enteros, vector_enteros2);
+                double time2=System.currentTimeMillis();
+                System.out.print("\nResultado de multiplicar los dos numeros ESCUELA:   ");        
+                mostrar_numero(result_mult1);  
+                tiempo=tiempo+((time2-time1)/10000);
+                System.out.print("\nTiempo empleado en la multiplicacion escuela:   "+tiempo+" ms");
+        }
 
+        /*
         int salir=1;
         while(salir==1){
             ArrayList<Integer> vector_enteros=new ArrayList<>();
@@ -878,9 +937,7 @@ public class CalculoSimbolico {
                 time1=System.currentTimeMillis();
                 num1_base_mod=cambio_base_modular(vector_enteros, primos_relativos);                
                 num2_base_mod=cambio_base_modular(vector_enteros2, primos_relativos);
-                result_modular=multiplicacion_modular(num1_base_mod, num2_base_mod, primos_relativos); 
-                System.out.print("\nResultado de la multiplicacion modular   ");        
-                mostrar_numero(result_modular);
+                result_modular=multiplicacion_modular(num1_base_mod, num2_base_mod, primos_relativos);         
                 time2=System.currentTimeMillis();
                 tiempo=time2-time1;
 
@@ -904,115 +961,7 @@ public class CalculoSimbolico {
                 }
             }            
         }
-        
-        /*
-        System.out.print("\nINTRODUCE UN NUMERO\n");
-        //numChar=leer_numero_hexadecimal();
-        System.out.print("\nINTRODUCE OTRO NUMERO\n");
-        //numChar2=leer_numero_hexadecimal();
-        
-        numChar.add('1');
-        numChar.add('0');
-        numChar.add('0');
-        numChar.add('0');
-        numChar.add('0');
-        numChar.add('1');
-        numChar2.add('1');
-        numChar2.add('2');
-        numChar2.add('2');
-        numChar2.add('2');
-        numChar2.add('2');
-        numChar2.add('2');
-        numChar2.add('2');
-        numChar2.add('2');
-        numChar2.add('2');
-        
-        for(int i=0;i<30;i++)
-            numChar.add('F');
-        for(int i=0;i<20;i++)
-            numChar2.add('3');
-        vector_enteros=cambiaBase(numChar);
-        vector_enteros2=cambiaBase(numChar2);
-        
-        System.out.print("\nNum1:   ");      
-        mostrar_numero(vector_enteros);
-        System.out.print("\nNum2:   ");      
-        mostrar_numero(vector_enteros2);
-        
-        ArrayList<Integer> primos_relativos=new ArrayList<Integer>();
-        primos_relativos=guarda_vector_numeros_primos(vector_enteros, vector_enteros2);
-        System.out.print("\nPrimos:          ");        
-        mostrar_numero(primos_relativos);       
-
-                 ArrayList<Integer> num1_base_mod=new ArrayList<Integer>();
-        num1_base_mod=cambio_base_modular(vector_enteros, primos_relativos);
-        System.out.print("\nnum1_base_mod:   ");        
-        mostrar_numero(num1_base_mod); 
-                 ArrayList<Integer> num2_base_mod=new ArrayList<Integer>();
-        num2_base_mod=cambio_base_modular(vector_enteros2, primos_relativos);
-        System.out.print("\nnum2_base_mod:   ");        
-        mostrar_numero(num2_base_mod); 
-        
-                  ArrayList<Integer> result_modular=new ArrayList<Integer>();
-        result_modular=multiplicacion_modular(num1_base_mod, num2_base_mod, primos_relativos);
-        System.out.print("\nresult_modular:   ");        
-        mostrar_numero(result_modular);        
-        
-                          ArrayList<ArrayList<Integer>> cij=new ArrayList<ArrayList<Integer>>();
-        cij=alg_euclides(primos_relativos);
-        System.out.print("\ncij:   ");       
-        for(int i=0;i<cij.size();i++){
-            System.out.print("\n "); 
-                   mostrar_numero(cij.get(i));   
-        }
-
-        
-                           ArrayList<Integer> result_mod=new ArrayList<Integer>();
-        result_mod=pasar_base_mod_a_normal(result_modular, cij, primos_relativos);
-        System.out.print("\nresult_modular:                                     ");  
-        mostrar_numero(result_mod);
-        
-                System.out.print("\nNum1:   ");      
-        mostrar_numero(vector_enteros);
-        System.out.print("\nNum2:   ");      
-        mostrar_numero(vector_enteros2);
-        
-                ArrayList<Integer> result_mult1=new ArrayList<Integer>();
-        result_mult1=mult_escuela(vector_enteros, vector_enteros2);
-                elimina_ceros_izq(result_mult1);
-        System.out.print("\nResultado de multiplicar los dos numeros ESCUELA:   ");        
-        mostrar_numero(result_mult1);  
-        
-                ArrayList<Integer> result_mult2=new ArrayList<Integer>();
-        ArrayList<Integer> result=new ArrayList<>();
-        result_mult2=calcula_m_karatsuba(vector_enteros, vector_enteros2);
-        System.out.print("\nResultado de multiplicar los dos numeros KARATSUBA: ");
-                elimina_ceros_izq(result_mult2);
-        mostrar_numero(result_mult2);*/
-   /*   
-        ArrayList<Integer> result_mult2=new ArrayList<Integer>();
-        ArrayList<Integer> result=new ArrayList<>();
-        result_mult2=calcula_m_karatsuba(vector_enteros, vector_enteros2);
-        System.out.print("\nResultado de multiplicar los dos numeros KARATSUBA: ");
-                elimina_ceros_izq(result_mult2);
-        mostrar_numero(result_mult2);
-        
- 
-
-        boolean iguales=true;
-        for(int i=0;i<result_mult2.size();i++){
-            if(result_mult2.get(i).intValue()!=result_mult1.get(i).intValue()){
-                iguales=false;
-            }
-        }
-        if(result_mult1.size()!=result_mult2.size())
-            iguales=false;
-        
-        if(iguales==false){
-            System.out.print("\nMalllllllllllll-----------------");
-        }else
-            System.out.print("\nBien !!!!!!!");
-         * */
+ */
          
    } 
 }
