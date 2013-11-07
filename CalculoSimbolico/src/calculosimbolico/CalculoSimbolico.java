@@ -472,7 +472,7 @@ public class CalculoSimbolico {
       StringBuffer str=new StringBuffer();
 
       try  {
-            entrada=new FileReader("primos.txt");
+            entrada=new FileReader("primos - copia.txt");
             int c;
             while((c=entrada.read())!=-1){
                 str.append((char)c);                
@@ -484,7 +484,6 @@ public class CalculoSimbolico {
        for(int i=str.length()-5;i>=0;i=i-7){       
            String num_primo=new String();
            num_primo=str.substring(i, i+5);
-          
            vector_primos_aux.add(Integer.parseInt(num_primo));
        }
        
@@ -657,14 +656,16 @@ public class CalculoSimbolico {
        aux=x.get(0)%m.get(0);
        y.add((int) aux);  
        for(int i=1;i<m.size();i++){       
-           aux=x.get(i);                
+           aux=x.get(i);                                  
+               System.out.print("\n----------------------------- i="+i);
            for(int j=0;j<i;j++){
                boolean resta_neg=false;
                if(aux<y.get(j)){
                    resta_neg=true;
                }
+                             System.out.print("\n("+aux+"-"+y.get(j)+")*"+cij.get(j).get(i)+" % "+m.get(i));
                if(resta_neg==true){
-                    aux=getUnsignedInt( (int) ((aux-y.get(j))*cij.get(j).get(i))*(-1));
+                   aux=getUnsignedInt( (int) ((aux-y.get(j))*cij.get(j).get(i))*(-1));
                    aux=aux%m.get(i);
                    aux=aux*(-1);
                    aux=aux+m.get(i);
@@ -672,10 +673,23 @@ public class CalculoSimbolico {
                    aux=getUnsignedInt( (int) (aux-y.get(j))*cij.get(j).get(i));
                    aux=aux%m.get(i);
                }
+               System.out.print(" = "+ aux);
            }         
+         
+           System.out.print("\ny= "+aux);
            y.add((int) aux);
-       }       
-       
+       }     
+              System.out.print("\nx= "+x.size()+" num=  ");
+       mostrar_numero(x);  
+       System.out.print("\nprimos= "+m.size()+" num=  ");
+       mostrar_numero(m);       
+       System.out.print("\nTenemos cij= "+cij.size()+" num=  ");
+       for(int i=0;i<cij.size();i++) {
+            System.out.print("\n"+cij.get(i).size()+" num=  ");
+            mostrar_numero(cij.get(i));
+       }
+       System.out.print("\nTenemos y= "+ y.size()+" num=  ");
+       mostrar_numero(y);
        ArrayList<Integer> solucion=new ArrayList<>();
        solucion.add(y.get(0));
        for(int i=1;i<m.size();i++){
@@ -690,7 +704,14 @@ public class CalculoSimbolico {
                aux3.add(m.get(j));
                mult_aux=mult_escuela(mult_aux, aux3);
            }
+           elimina_ceros_izq(mult_aux);
+           System.out.print("\nSOL=  ");
+           mostrar_numero(solucion);
+           System.out.print("\n     MULT=  ");
+           mostrar_numero(mult_aux);
            solucion=suma_escuela(solucion,mult_aux);
+           System.out.print("\n         SOL sumada =  ");
+           mostrar_numero(solucion);
        }
        
        return solucion;
@@ -716,6 +737,7 @@ public class CalculoSimbolico {
     
     
     public static void main(String[] args) {
+    /*
         double tiempo=0;
         for(int k=0;k<30;k++){
             int num_dig=1;
@@ -777,9 +799,8 @@ public class CalculoSimbolico {
                 mostrar_numero(result_mult1);  
                 tiempo=tiempo+((time2-time1)/10000);
                 System.out.print("\nTiempo empleado en la multiplicacion escuela:   "+tiempo+" ms");
-        }
+        }*/
 
-        /*
         int salir=1;
         while(salir==1){
             ArrayList<Integer> vector_enteros=new ArrayList<>();
@@ -961,7 +982,7 @@ public class CalculoSimbolico {
                 }
             }            
         }
- */
+
          
    } 
 }
