@@ -488,7 +488,8 @@ public class CalculoSimbolico {
        }
        
        int tam_vector_primos=0;
-       tam_vector_primos=new Double (16*(num1.size()+num2.size())/15).intValue()+1;
+       tam_vector_primos=new Double (16*(num1.size()+num2.size())/15).intValue()+2;
+       //tam_vector_primos=new Double (23*(num1.size()+num2.size())/15).intValue()+1;
        ArrayList<Integer> vector_primos=new ArrayList<>();       
        for(int i=0;i<tam_vector_primos;i++){
            vector_primos.add(vector_primos_aux.get(i));
@@ -657,6 +658,54 @@ public class CalculoSimbolico {
        y.add((int) aux);  
        for(int i=1;i<m.size();i++){       
            aux=x.get(i);                                  
+           for(int j=0;j<i;j++){
+               boolean resta_neg=false;
+               if(aux<y.get(j)){
+                   resta_neg=true;
+               }
+               if(resta_neg==true){
+                   aux=getUnsignedInt( (int) ((aux-y.get(j))*cij.get(j).get(i))*(-1));
+                   aux=aux%m.get(i);
+                   aux=aux*(-1);
+                   aux=aux+m.get(i);
+               }else{
+                   aux=getUnsignedInt( (int) (aux-y.get(j))*cij.get(j).get(i));
+                   aux=aux%m.get(i);
+               }
+           }         
+           y.add((int) aux);
+       }     
+       ArrayList<Integer> solucion=new ArrayList<>();
+       solucion.add(y.get(0));
+       for(int i=1;i<m.size();i++){
+           ArrayList<Integer> mult_aux=new ArrayList<>();
+           ArrayList<Integer> aux1=new ArrayList<>();
+           ArrayList<Integer> aux2=new ArrayList<>();
+           aux1.add(y.get(i));
+           aux2.add(m.get(0));
+           mult_aux=mult_escuela(aux1, aux2);
+           for(int j=1;j<i;j++){
+               ArrayList<Integer> aux3=new ArrayList<>();
+               aux3.add(m.get(j));
+               mult_aux=mult_escuela(mult_aux, aux3);
+           }
+           elimina_ceros_izq(mult_aux);
+
+           solucion=suma_escuela(solucion,mult_aux);
+       }
+       
+       return solucion;
+   }
+   /*
+       public static ArrayList<Integer> pasar_base_mod_a_normal(ArrayList<Integer> x, ArrayList<ArrayList<Integer>> cij, ArrayList<Integer> m){
+       ArrayList<Integer> y=new ArrayList<>();
+       
+       long aux=0;
+       
+       aux=x.get(0)%m.get(0);
+       y.add((int) aux);  
+       for(int i=1;i<m.size();i++){       
+           aux=x.get(i);                                  
                System.out.print("\n----------------------------- i="+i);
            for(int j=0;j<i;j++){
                boolean resta_neg=false;
@@ -716,7 +765,7 @@ public class CalculoSimbolico {
        
        return solucion;
    }
-   
+    */
    /**
     * Lee un número desde la entrada estándar
     * @return num número que se ha leido.
@@ -737,12 +786,14 @@ public class CalculoSimbolico {
     
     
     public static void main(String[] args) {
-    /*
-        double tiempo=0;
+        /*
+                double tiempo=0;
         for(int k=0;k<30;k++){
-            int num_dig=1;
+            int num_dig=4096;
             int num_dig2=1;
             
+            num_dig=num_dig*4;
+            num_dig2=num_dig2*4;
             ArrayList<Integer> vector_enteros=new ArrayList<>();
             ArrayList<Integer> vector_enteros2=new ArrayList<>();
             ArrayList<Character> numChar=new ArrayList<>();
@@ -789,18 +840,125 @@ public class CalculoSimbolico {
                 }    
                 vector_enteros=cambiaBase(numChar);
                 vector_enteros2=cambiaBase(numChar2);
+
                 
                 ArrayList<Integer> result_mult1=new ArrayList<Integer>();                
                 double time1=System.currentTimeMillis();
-                for(int p=0;p<10000;p++)
+                for(int p=0;p<100;p++)
                     result_mult1=mult_escuela(vector_enteros, vector_enteros2);
                 double time2=System.currentTimeMillis();
-                System.out.print("\nResultado de multiplicar los dos numeros ESCUELA:   ");        
-                mostrar_numero(result_mult1);  
-                tiempo=tiempo+((time2-time1)/10000);
+                 
+                 
+                //System.out.print("\nResultado de multiplicar los dos numeros ESCUELA:   ");        
+                //mostrar_numero(result_mult1);  
+                tiempo=tiempo+((time2-time1)/100);
                 System.out.print("\nTiempo empleado en la multiplicacion escuela:   "+tiempo+" ms");
-        }*/
+        }
+        tiempo=tiempo/30;
+        System.out.print("\nTiempo FINAL:   "+tiempo+" ms");
+        
+    */ /*
+        double tiempo=0;
+        for(int k=0;k<3;k++){
+            int num_dig=1024;
+            int num_dig2=1024;
+            
+            num_dig=num_dig*4;
+            num_dig2=num_dig2*4;
+            ArrayList<Integer> vector_enteros=new ArrayList<>();
+            ArrayList<Integer> vector_enteros2=new ArrayList<>();
+            ArrayList<Character> numChar=new ArrayList<>();
+            ArrayList<Character> numChar2=new ArrayList<>();
+                for(int i=0;i<num_dig;i++){
+                    int dig= new Double(Math.random()*16).intValue();
+                    char dig_char='x';
+                    if(dig<10){
+                        dig_char= (new Integer (dig).toString()).charAt(0);
+                    }else if(dig==10){
+                        dig_char='a';
+                    }else if(dig==11){
+                        dig_char='b';
+                    }else if(dig==12){
+                        dig_char='c';
+                    }else if(dig==13){
+                        dig_char='d';
+                    }else if(dig==14){
+                        dig_char='e';
+                    }else if(dig==15){
+                        dig_char='f';
+                    }
+                    numChar.add(dig_char);
+                }
+                for(int i=0;i<num_dig2;i++){
+                    int dig= new Double(Math.random()*16).intValue();
+                    char dig_char='x';
+                    if(dig<10){
+                        dig_char= (new Integer (dig).toString()).charAt(0);
+                    }else if(dig==10){
+                        dig_char='a';
+                    }else if(dig==11){
+                        dig_char='b';
+                    }else if(dig==12){
+                        dig_char='c';
+                    }else if(dig==13){
+                        dig_char='d';
+                    }else if(dig==14){
+                        dig_char='e';
+                    }else if(dig==15){
+                        dig_char='f';
+                    }
+                    numChar2.add(dig_char);
+                }    
+                vector_enteros=cambiaBase(numChar);
+                vector_enteros2=cambiaBase(numChar2);
+         /////////////////////////////////////////////////////////////////////////////////
+                
+                ArrayList<Integer> primos_relativos=new ArrayList<Integer>();
+                primos_relativos=guarda_vector_numeros_primos(vector_enteros, vector_enteros2);
 
+                ArrayList<Integer> num1_base_mod=new ArrayList<Integer>();
+                ArrayList<Integer> num2_base_mod=new ArrayList<Integer>();
+                ArrayList<Integer> result_modular=new ArrayList<Integer>();
+                long time1=System.currentTimeMillis();
+                num1_base_mod=cambio_base_modular(vector_enteros, primos_relativos);                
+                num2_base_mod=cambio_base_modular(vector_enteros2, primos_relativos);
+                result_modular=multiplicacion_modular(num1_base_mod, num2_base_mod, primos_relativos);                
+                long time2=System.currentTimeMillis();
+                long tiempo_aux=time2-time1;
+System.out.print("\n\nTiempo empleado en cambio a base modular y en mult modular:   "+tiempo_aux+" ms");
+                time1=System.currentTimeMillis();
+                ArrayList<ArrayList<Integer>> cij=new ArrayList<ArrayList<Integer>>();
+                cij=alg_euclides(primos_relativos);
+                time2=System.currentTimeMillis();
+                long tiempo_aux3=time2-time1;
+System.out.print("\nTiempo empleado en alg euclides:   "+tiempo_aux3+" ms");
+                
+                ArrayList<Integer> result_mod=new ArrayList<Integer>();
+                
+                time1=System.currentTimeMillis();
+                result_mod=pasar_base_mod_a_normal(result_modular, cij, primos_relativos);
+                time2=System.currentTimeMillis();
+                tiempo_aux=tiempo_aux+time2-time1;
+                long tiempo_aux4=time2-time1;
+
+                
+               // ArrayList<Integer> result_mult1=new ArrayList<Integer>();                
+               // double time1=System.currentTimeMillis();
+               // for(int p=0;p<5;p++)
+                //    result_mult1=calcula_m_karatsuba(vector_enteros, vector_enteros2);
+               // double time2=System.currentTimeMillis();
+                
+                 
+                //System.out.print("\nResultado de multiplicar los dos numeros ESCUELA:   ");        
+                //mostrar_numero(result_mult1);  
+                tiempo=tiempo+tiempo_aux;
+System.out.print("\nTiempo empleado en volver a base normal:   "+tiempo_aux3+" ms");
+                System.out.print("\nTiempo empleado total:   "+tiempo+" ms");
+        }
+        tiempo=tiempo/3;
+        System.out.print("\nTiempo FINAL:   "+tiempo+" ms");
+        
+*/
         int salir=1;
         while(salir==1){
             ArrayList<Integer> vector_enteros=new ArrayList<>();
@@ -808,7 +966,8 @@ public class CalculoSimbolico {
             ArrayList<Character> numChar=new ArrayList<>();
             ArrayList<Character> numChar2=new ArrayList<>();
             
-            int intro_datos=0;         
+            int intro_datos=0;
+            
             while(intro_datos!=1 && intro_datos!=2){
                 System.out.print("\nDesea introducir los numeros:  \n    1. A mano \n    2.Aleatoriamente\n");
                 intro_datos=leer_numero();                
@@ -825,7 +984,8 @@ public class CalculoSimbolico {
                 System.out.print("\nCuantos digitos quiere que tenga el primer numero:\n");
                 int num_dig=leer_numero();        
                 System.out.print("\nCuantos digitos quiere que tenga el segundo numero:\n");
-                int num_dig2=leer_numero(); 
+                int num_dig2=leer_numero();
+                
                 for(int i=0;i<num_dig;i++){
                     int dig= new Double(Math.random()*16).intValue();
                     char dig_char='x';
@@ -866,22 +1026,26 @@ public class CalculoSimbolico {
                     }
                     numChar2.add(dig_char);
                 }               
-                System.out.print("\nPrimer numero generado aleatoriamente: "+numChar.size());
-                for(int i=numChar.size()-1;i>=0;i--)
+
+                System.out.print("\nPrimer numero generado aleatoriamente:  ");
+                for(int i=numChar.size()-1;i>=0;i--){
                     System.out.print(numChar.get(i));
+                }
                 System.out.print("\nSegundo numero generado aleatoriamente: ");
                 for(int i=numChar2.size()-1;i>=0;i--)
                     System.out.print(numChar2.get(i));
             }
             vector_enteros=cambiaBase(numChar);
             vector_enteros2=cambiaBase(numChar2);
-            System.out.print("\nNumero1 base (2^16):   ");      
+            
+            System.out.print("\nNumero1 base (2^16):                   ");      
             mostrar_numero(vector_enteros);
-            System.out.print("\nNumero2 base (2^16):   ");      
+            System.out.print("\nNumero2 base (2^16):                   ");      
             mostrar_numero(vector_enteros2);
             int mult_usada=0;
+            
             while(mult_usada!=1 && mult_usada!=2 && mult_usada!=3 && mult_usada!=4){
-                System.out.print("\nDiga que multiplicacion quiere usar: \n   1.Escuela\n   2.Karatsuba\n   3.Modular\n   4.Las tres anteriores para comparar los tiempos\n");
+                System.out.print("\n\nDiga que multiplicacion quiere usar: \n   1.Escuela\n   2.Karatsuba\n   3.Modular\n   4.Las tres anteriores para comparar los tiempos\n");
                 mult_usada=leer_numero();      
                 if(mult_usada!=1 && mult_usada!=2 && mult_usada!=3 && mult_usada!=4){
                     System.out.print("\nError: diga un numero entre 1 y 4.");
@@ -934,7 +1098,8 @@ public class CalculoSimbolico {
                 long time1=System.currentTimeMillis();
                 result_mult1=mult_escuela(vector_enteros, vector_enteros2);
                 long time2=System.currentTimeMillis();
-                System.out.print("\nResultado de multiplicar los dos numeros ESCUELA:   ");        
+                result_mult1=elimina_ceros_izq(result_mult1);
+                System.out.print("\nResultado de multiplicar los dos numeros ESCUELA:     ");        
                 mostrar_numero(result_mult1);  
                 long tiempo=time2-time1;
                 System.out.print("\nTiempo empleado en la multiplicacion escuela:   "+tiempo+" ms");
@@ -943,7 +1108,7 @@ public class CalculoSimbolico {
                 time1=System.currentTimeMillis();
                 result_mult2=calcula_m_karatsuba(vector_enteros, vector_enteros2);
                 time2=System.currentTimeMillis();
-                System.out.print("\nResultado de multiplicar los dos numeros KARATSUBA: ");
+                System.out.print("\nResultado de multiplicar los dos numeros KARATSUBA:   ");
                 mostrar_numero(result_mult2);
                 tiempo=time2-time1;
                 System.out.print("\nTiempo empleado en la multiplicacion Karatsuba:   "+tiempo+" ms");
@@ -969,20 +1134,20 @@ public class CalculoSimbolico {
                 result_mod=pasar_base_mod_a_normal(result_modular, cij, primos_relativos);
                 time2=System.currentTimeMillis();
                 tiempo=tiempo+time2-time1;
-                System.out.print("\nResultado de la multiplicacion modular   ");        
+                System.out.print("\nResultado de la multiplicacion modular:               ");        
                 mostrar_numero(result_mod);
                 System.out.print("\nTiempo empleado en la multiplicacion modular:   "+tiempo+" ms");
             }
             salir=0;
+            
             while(salir!=1 && salir!=2){
-                System.out.print("\n¿Desea hacer mas multiplicaciones?\n   1. Si\n   2. No\n");
+                System.out.print("\n\n¿Desea hacer mas multiplicaciones?\n   1. Si\n   2. No\n");
                 salir=leer_numero();      
                 if(salir!=1 && salir!=2){
                     System.out.print("\nError: diga un numero entre 1 y 2.");
                 }
-            }            
+            }           
         }
-
          
    } 
 }
