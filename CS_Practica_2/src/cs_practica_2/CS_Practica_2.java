@@ -142,6 +142,7 @@ public class CS_Practica_2 {
     
    /**
     * Lee de la entrada estándar un polinomio de numeros complejos con el formato (real1,imag1)(real2,imag2)(real3,imag3)......
+    * empezando por el coeficiente menos significativo.
     * @return polinomio de numeros complejo
     */
    public static ArrayList<ArrayList<Double>> leer_polinomio_en_C(){
