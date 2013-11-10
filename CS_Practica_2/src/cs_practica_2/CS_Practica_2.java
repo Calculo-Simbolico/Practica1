@@ -56,6 +56,21 @@ public class CS_Practica_2 {
         return complejoC;
     }
     
+    /**
+     * Producto de complejo por un escalar--> (a, b)*esc = (a*esc, b*esc) 
+     * @param complejoA numero complejo que se va a restar.
+     * @param complejoB numero complejo que se va a restar.
+     * @return numero complejo solucion.
+     */
+    public static ArrayList<Double> prodPorEsc_en_C(Integer escalar, ArrayList<Double> complejoA){
+        ArrayList<Double> complejoC=new ArrayList<Double>();
+             
+        complejoC.add(0,complejoA.get(0)*escalar);
+        complejoC.add(1,complejoA.get(1)*escalar);
+        
+        return complejoC;
+    }
+    
     
     /**
      * Multiplicacion por el algoritmo escuela de dos polinomios de numeros complejos en una variable. Ejemplo: 
@@ -95,14 +110,53 @@ public class CS_Practica_2 {
     
     /**
      * 
-     * @param N
-     * @param omega
-     * @param polA
-     * @return 
+     * @param N es la menor potencia de 2 tal que este numero sea mayor que la suma del grado de los dos polinomios que se
+     * multiplicaran en multiplicacion_FFT_en_C, dicho metodo hara llamadas a este.
+     * @param omega una raiz 2^N -esima primitiva de la unidad que se le pasara desde multiplicacion_FFT_en_C el las llamadas.
+     * @param polA debe ser un polinomio de numeros complejos de grado menor que N
+     * @return polinomio de numeros complejos con la solucion
      */
     public static ArrayList<ArrayList<Double>> FFT_en_C(Integer N, Integer omega, ArrayList<ArrayList<Double>> polA){
         ArrayList<ArrayList<Double>> A=new ArrayList<ArrayList<Double>>();
+        ArrayList<ArrayList<Double>> B=new ArrayList<ArrayList<Double>>();
+        ArrayList<ArrayList<Double>> C=new ArrayList<ArrayList<Double>>();
+        ArrayList<ArrayList<Double>> polB=new ArrayList<ArrayList<Double>>();
+        ArrayList<ArrayList<Double>> polC=new ArrayList<ArrayList<Double>>();
+        ArrayList<Double>complejo=new ArrayList<>();
         
+        if(N==1){
+            complejo.add(0, polA.get(0).get(0));
+            complejo.add(1, polA.get(0).get(1));
+            A.add(0, complejo);
+        }
+        else{
+            for(int i=0;i<(N/2)-1;i++){
+                //Componentes para polB, que son los componentes pares de polA
+                if(i%2==0){
+                    complejo.add(0, polA.get(i).get(0));
+                    complejo.add(1, polA.get(i).get(1));
+                    polB.add(complejo);
+                }
+                //Componentes para polC, que son los componentes impares de polA
+                else{
+                    complejo.add(0, polA.get(i).get(0));
+                    complejo.add(1, polA.get(i).get(1));
+                    polC.add(complejo);
+                }
+            }
+            
+            A=FFT_en_C(N/2, (int)Math.pow(omega, 2), polB);
+            B=FFT_en_C(N/2, (int)Math.pow(omega, 2), polC);
+            
+            for(int i=0;i<(N/2)-1;i++){
+                complejo.add(0, sum_en_C(B.get(i), prodPorEsc_en_C((int)Math.pow(omega, i), C.get(i))).get(0));
+                complejo.add(1, sum_en_C(B.get(i), prodPorEsc_en_C((int)Math.pow(omega, i), C.get(i))).get(1));
+                A.add(i, complejo);
+                complejo.add(0, rest_en_C(B.get(i), prodPorEsc_en_C((int)Math.pow(omega, i), C.get(i))).get(0));
+                complejo.add(1, rest_en_C(B.get(i), prodPorEsc_en_C((int)Math.pow(omega, i), C.get(i))).get(1));
+                A.add((N/2)+i, complejo);
+            }
+        }
         return A;
     }
     
