@@ -58,7 +58,11 @@ public class CS_Practica_2 {
     
     
     /**
-     * Multiplicacion por el algoritmo escuela de dos polinomios de numeros complejos en una variable.  
+     * Multiplicacion por el algoritmo escuela de dos polinomios de numeros complejos en una variable. Ejemplo: 
+     * polA --> (3,1)(-2,0)(10,0)   
+     * polB --> (-12,3)(9,2)
+     * ((3,1i) + (-2,0i)x + (10,0i)x^2) * ((-12,3i) + (9,2i)x) = (-39,-3i) + (25,15i)x + (24,-6i)x + (-18,-4i)x^2 + (-120,30i)x^2 + (90,20i)x^3 = (-39,-3i) + (49,9i)x + (-138,26i)x^2 + (90,20i)x^3
+     * polC --> (-39,-3)(49,9)(-138,26)(90,20)                                               
      * @param polA polinomio de numeros complejos que se va a multiplicar, la posicion 0 del ArrayList anidado es la parte real 
      * y la posicion 1 es la parte imaginaria. 
      * @param polB polinomio de numeros complejos que se va a multiplicar, la posicion 0 del ArrayList anidado es la parte real 
@@ -69,7 +73,7 @@ public class CS_Practica_2 {
         ArrayList<ArrayList<Double>> polC=new ArrayList<ArrayList<Double>>();
         
         //Añadir ceros al polinomio solucion
-        for(int i=0;i<polA.size();i++){
+        for(int i=0;i<polA.size()+polB.size()-1;i++){
             ArrayList<Double>complejo=new ArrayList<>();
             complejo.add(0, 0.0);
             complejo.add(1, 0.0);
@@ -82,11 +86,12 @@ public class CS_Practica_2 {
                ArrayList<Double> complejoB =  polB.get(k);
                ArrayList<Double> complejoC = polC.get(i+k);
                ArrayList<Double> multC = mult_en_C(complejoA, complejoB);
-               polC.add(i+k, sum_en_C(multC, complejoC));
+               polC.set(i+k, sum_en_C(multC, complejoC));
             }
         }
         return polC;
     }
+	
     
     /**
      * 
@@ -101,6 +106,7 @@ public class CS_Practica_2 {
         return A;
     }
     
+    
     /**
      * 
      * @param N
@@ -113,6 +119,7 @@ public class CS_Practica_2 {
         
         return A;
     }
+    
     
     /**
      * 
@@ -127,6 +134,7 @@ public class CS_Practica_2 {
         
         return polC;
     }
+    
     
     /**
      * Muestra por pantalla el polinomio de complejos empezando por el coeficiente menos significativo y mostrando entre
