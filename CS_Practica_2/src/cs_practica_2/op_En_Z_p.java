@@ -48,6 +48,23 @@ public class op_En_Z_p {
         
         return raiz;  
     }
+    
+    
+     /**
+     * Calcula se hace modulo de un numero en Zp con p un numero primo impar.
+     * @param p modulo.
+     * @param num numero del cual se va a calcular el modulo.
+     * @return el modulo del numero.
+     */
+    public static Integer modulo_en_Zp(Integer p, Integer num){
+        Integer modulo = 0;
+        modulo=num%p;
+        
+        if(modulo<0)
+            return p+modulo;
+        else 
+            return modulo;
+    }
   
     
     /**
@@ -66,7 +83,7 @@ public class op_En_Z_p {
         
         for(int k=0;k<polB.size();k++)
             for(int i=0;i<polA.size();i++)
-               polC.set(i+k, ((polA.get(i)*polB.get(k))+polC.get(i+k))% p);
+               polC.set(i+k, modulo_en_Zp(p, (polA.get(i)*polB.get(k))+polC.get(i+k)));
 
         return polC;
     }
@@ -81,14 +98,19 @@ public class op_En_Z_p {
      * @param p numero primo impar.
      * @return polinomio de numeros con la solucion
      */
-    public static ArrayList<Integer> FFT_en_Zp(Integer potDe2, Integer omega, ArrayList<Integer> polA, Integer p){
+    public static ArrayList<Integer> FFT_en_Zp(Integer N, Integer omega, ArrayList<Integer> polA, Integer p){
         ArrayList<Integer> A=new ArrayList<Integer>();
         ArrayList<Integer> B=new ArrayList<Integer>();
         ArrayList<Integer> C=new ArrayList<Integer>();
         ArrayList<Integer> polB=new ArrayList<Integer>();
         ArrayList<Integer> polC=new ArrayList<Integer>();
         
-        if(potDe2==1){ 
+        //Inicializar A con ceros con un tamaño igual a 2^N 
+        for(int i=0;i<((int)Math.pow(2, N));i++){
+            A.add(0);
+        }
+        
+        if((int)Math.pow(2, N)==1){ 
             A.add(0, polA.get(0));
         }
         else{
@@ -102,13 +124,12 @@ public class op_En_Z_p {
                     polC.add(polA.get(i));
                 }
             }
+            B=FFT_en_Zp(N-1, modulo_en_Zp(p, (int)Math.pow(omega, 2)), polB, p);
+            C=FFT_en_Zp(N-1, modulo_en_Zp(p, (int)Math.pow(omega, 2)), polC, p);
 
-            B=FFT_en_Zp(potDe2/2, ((int)Math.pow(omega, 2))%p, polB, p);
-            C=FFT_en_Zp(potDe2/2, ((int)Math.pow(omega, 2))%p, polC, p);
-
-            for(int i=0;i<(potDe2/2);i++){
-                A.add(i, (B.get(i)+((int)Math.pow(omega, i)* C.get(i)))% p);
-                A.add((potDe2)+i, (B.get(i)-((int)Math.pow(omega, i)* C.get(i)))% p);
+            for(int i=0;i<((int)Math.pow(2, N-1));i++){
+                A.set(i, modulo_en_Zp(p, B.get(i)+((int)Math.pow(omega, i)* C.get(i))));
+                A.set(((int)Math.pow(2, N-1))+i, modulo_en_Zp(p, B.get(i)-((int)Math.pow(omega, i)* C.get(i))));
             }
         }
         return A;
@@ -125,7 +146,7 @@ public class op_En_Z_p {
      * @param p numero primo impar.
      * @return polinomio de numeros en Zp con la solucion.
      */
-    public static ArrayList<Integer> IFFT_en_Zp(Integer potDe2, Integer omega, ArrayList<Integer> polC, Integer p){
+    public static ArrayList<Integer> IFFT_en_Zp(Integer N, Integer omega, ArrayList<Integer> polC, Integer p){
         ArrayList<Integer> polSol=new ArrayList<Integer>();
         ArrayList<Integer> polAux=new ArrayList<Integer>();
         
@@ -134,13 +155,13 @@ public class op_En_Z_p {
 
         //Llamar a 'FFT_en_C' pero con el inverso de omega
 
-        polAux=FFT_en_Zp(potDe2, invOmega, polC, p);
+        polAux=FFT_en_Zp(N, invOmega, polC, p);
         
         //Multiplicar cada uno de los elementos del polinomio devuelto por 'FFT_en_Zp' por el inverso de 2^N y el nuemo polinomio sera la solucion
-        Integer invPotDe2=inverso_en_Zp(p, potDe2);
+        Integer invPotDe2=inverso_en_Zp(p, ((int) Math.pow( 2, N)));
 
         for(int i=0;i<polAux.size();i++){
-            polSol.set(i, (invPotDe2*polAux.get(i))% p);
+            polSol.add(i, modulo_en_Zp(p, invPotDe2*polAux.get(i)));
         }
         return polSol;
     }
@@ -171,22 +192,22 @@ public class op_En_Z_p {
             N++;
         }
         //Calcular omega=raiz 2^N-esima primitiva de la unidad
-        omega=raiz_n_esima_primitiva();//SIN HACER
+        omega=9;//raiz_n_esima_primitiva();//SIN HACER
         
         //Antes de llamar a 'FFT_en_C' hay que añadir ceros al final de polA y polB hasta que tengan un tamaño igual a 2^N
-        for(int i=polA.size();i<(int) Math.pow( 2, N);i++)
+        for(int i=polA.size();i<((int) Math.pow( 2, N));i++)
             polA.add(i,0);
-        for(int i=polB.size();i<(int) Math.pow( 2, N);i++)
+        for(int i=polB.size();i<((int) Math.pow( 2, N));i++)
             polB.add(i,0);
         
-        A=FFT_en_Zp((int) Math.pow( 2, N), omega, polA, p);
-        B=FFT_en_Zp((int) Math.pow( 2, N), omega, polB, p);
+        A=FFT_en_Zp(N, omega, polA, p);
+        B=FFT_en_Zp(N, omega, polB, p);
 
         for(int i=0;i<((int) Math.pow( 2, N));i++){
-            C.add(i, (A.get(i)*B.get(i))% p);
+            C.add(i, modulo_en_Zp(p, A.get(i)*B.get(i)));
         }       
         //Llamada a la transformada de Fourier Inversa.
-        polSol=IFFT_en_Zp((int)Math.pow( 2, N), omega, C, p);
+        polSol=IFFT_en_Zp(N, omega, C, p);
 
         return polSol;
     }
@@ -198,9 +219,9 @@ public class op_En_Z_p {
      */
     public static void mostrar_polinomio_en_Zp(ArrayList<Integer> pol){
         System.out.print("[");
-        for(int i=0;i<pol.size()-1;i++)
-            System.out.print(pol.get(i)+", ");
-        System.out.print(pol.get(pol.size()-1));
+        for(int i=0;i<pol.size();i++)
+            System.out.print(pol.get(i)+" ");
+       
         System.out.print("]\n");
    }
     
@@ -230,7 +251,7 @@ public class op_En_Z_p {
                    dig+=numStr.charAt(i);
                    i++;
                 }
-                Integer num=((Integer.parseInt(dig))% p);
+                Integer num=(modulo_en_Zp(p, Integer.parseInt(dig)));
                 pol.add(num);
             }
             else
@@ -247,13 +268,13 @@ public class op_En_Z_p {
         ArrayList<Integer> polB=new ArrayList<Integer>();
         ArrayList<Integer> polSolEsc=new ArrayList<Integer>();
         ArrayList<Integer> polSolFFT=new ArrayList<Integer>();
-        
+       
         System.out.print("\nINTRODUCE UN NUMERO PRIMO IMPAR p:\n");
         Integer p = Integer.parseInt(lectura.readLine());
         System.out.print("\nINTRODUCE EL PRIMER POLINOMIO DE NUMEROS EN Zp:\n");
         polA=leer_polinomio_en_Zp(p);
         System.out.print("\nINTRODUCE EL SEGUNDO POLINOMIO DE NUMEROS EN Zp:\n");
-        polB=leer_polinomio_en_Zp(p); 
+        polB=leer_polinomio_en_Zp(p);
        
         polSolEsc=multiplicacion_escuela_en_Zp(polA, polB, p);
         System.out.print("\nResultado en Zp de multiplicacion ESCUELA:\n");
