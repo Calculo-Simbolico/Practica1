@@ -1,12 +1,11 @@
-
 package cs_practica_2;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-public class CS_Practica_2 {
-    
+public class op_En_Complejos {
+
     //***************OPERACIONES PARA NUMEROS COMPLEJOS********************
     
     /**
@@ -58,17 +57,50 @@ public class CS_Practica_2 {
     
     /**
      * Producto de complejo por un escalar--> (a, b)*esc = (a*esc, b*esc) 
-     * @param complejoA numero complejo que se va a restar.
-     * @param complejoB numero complejo que se va a restar.
+     * @param complejoA numero complejo que se va a multiplicar.
+     * @param escalar escalar que se va a multiplicar.
      * @return numero complejo solucion.
      */
-    public static ArrayList<Double> prodPorEsc_en_C(Integer escalar, ArrayList<Double> complejoA){
+    public static ArrayList<Double> prodPorEsc_en_C(Double escalar, ArrayList<Double> complejoA){
         ArrayList<Double> complejoC=new ArrayList<Double>();
              
         complejoC.add(0,complejoA.get(0)*escalar);
         complejoC.add(1,complejoA.get(1)*escalar);
         
         return complejoC;
+    }
+    
+    
+    /**
+     * Calcula la potencia de un numero complejo 
+     * @param complejoA numero complejo que sera la base de la potencia.
+     * @param exp exponente de la potencia.
+     * @return numero complejo solucion.
+     */
+   public static ArrayList<Double> potencia_en_C(ArrayList<Double> complejoA, Integer exp){
+        ArrayList<Double> complejo=new ArrayList<Double>();
+        ArrayList<Double> complejoAux=new ArrayList<Double>();
+        
+        complejoAux=complejoA;
+
+        for(int i=1;i<exp;i++){
+            complejo=mult_en_C(complejoA, complejoAux);
+            complejoAux=complejo;
+        }
+        return complejo;
+    }
+    
+    
+    /**
+     * Calcula el inverso de un numero num haciendo 1/num 
+     * @param num numero del cual se va a calcular el inverso
+     * @return el inverso del numero
+     */
+    public static Double inverso(Integer num){ 
+        Double inverso = 0.0;
+        inverso=(double)1/num;
+        
+        return inverso;
     }
     
     
@@ -88,7 +120,7 @@ public class CS_Practica_2 {
         ArrayList<ArrayList<Double>> polC=new ArrayList<ArrayList<Double>>();
         
         //Añadir ceros al polinomio solucion
-        for(int i=0;i<polA.size()+polB.size()-1;i++){
+        for(int i=0;i<(polA.size()+polB.size())-1;i++){
             ArrayList<Double>complejo=new ArrayList<>();
             complejo.add(0, 0.0);
             complejo.add(1, 0.0);
@@ -106,17 +138,17 @@ public class CS_Practica_2 {
         }
         return polC;
     }
-	
+    
     
     /**
-     * 
-     * @param N es la menor potencia de 2 tal que este numero sea mayor que la suma del grado de los dos polinomios que se
+     * Transformada rapida de Fourier
+     * @param potDe2 es la menor potencia de 2 tal que este numero sea mayor que la suma del grado de los dos polinomios que se
      * multiplicaran en multiplicacion_FFT_en_C, dicho metodo hara llamadas a este.
      * @param omega una raiz 2^N -esima primitiva de la unidad que se le pasara desde multiplicacion_FFT_en_C el las llamadas.
      * @param polA debe ser un polinomio de numeros complejos de grado menor que N
      * @return polinomio de numeros complejos con la solucion
      */
-    public static ArrayList<ArrayList<Double>> FFT_en_C(Integer N, Integer omega, ArrayList<ArrayList<Double>> polA){
+    public static ArrayList<ArrayList<Double>> FFT_en_C(Integer potDe2, ArrayList<Double> omega, ArrayList<ArrayList<Double>> polA){
         ArrayList<ArrayList<Double>> A=new ArrayList<ArrayList<Double>>();
         ArrayList<ArrayList<Double>> B=new ArrayList<ArrayList<Double>>();
         ArrayList<ArrayList<Double>> C=new ArrayList<ArrayList<Double>>();
@@ -124,37 +156,38 @@ public class CS_Practica_2 {
         ArrayList<ArrayList<Double>> polC=new ArrayList<ArrayList<Double>>();
         ArrayList<Double>complejo=new ArrayList<>();
         
-        if(N==1){
+        if(potDe2==1){ 
             complejo.add(0, polA.get(0).get(0));
             complejo.add(1, polA.get(0).get(1));
             A.add(0, complejo);
         }
         else{
-            for(int i=0;i<(N/2)-1;i++){
+            for(int i=0;i<polA.size();i++){
                 //Componentes para polB, que son los componentes pares de polA
                 if(i%2==0){
-                    complejo.add(0, polA.get(i).get(0));
-                    complejo.add(1, polA.get(i).get(1));
-                    polB.add(complejo);
+                    ArrayList<Double>complejo1=new ArrayList<>();
+                    complejo1.add(0, polA.get(i).get(0));
+                    complejo1.add(1, polA.get(i).get(1));
+                    polB.add(complejo1);
                 }
                 //Componentes para polC, que son los componentes impares de polA
                 else{
-                    complejo.add(0, polA.get(i).get(0));
-                    complejo.add(1, polA.get(i).get(1));
-                    polC.add(complejo);
+                    ArrayList<Double>complejo2=new ArrayList<>();
+                    complejo2.add(0, polA.get(i).get(0));
+                    complejo2.add(1, polA.get(i).get(1));
+                    polC.add(complejo2);
                 }
             }
+            B=FFT_en_C(potDe2/2, potencia_en_C(omega, 2), polB);
+            C=FFT_en_C(potDe2/2, potencia_en_C(omega, 2), polC);
             
-            A=FFT_en_C(N/2, (int)Math.pow(omega, 2), polB);
-            B=FFT_en_C(N/2, (int)Math.pow(omega, 2), polC);
-            
-            for(int i=0;i<(N/2)-1;i++){
-                complejo.add(0, sum_en_C(B.get(i), prodPorEsc_en_C((int)Math.pow(omega, i), C.get(i))).get(0));
-                complejo.add(1, sum_en_C(B.get(i), prodPorEsc_en_C((int)Math.pow(omega, i), C.get(i))).get(1));
+            for(int i=0;i<(potDe2/2);i++){
+                complejo.add(0, sum_en_C(B.get(i), mult_en_C(potencia_en_C(omega, i), C.get(i))).get(0));
+                complejo.add(1, sum_en_C(B.get(i), mult_en_C(potencia_en_C(omega, i), C.get(i))).get(1));
                 A.add(i, complejo);
-                complejo.add(0, rest_en_C(B.get(i), prodPorEsc_en_C((int)Math.pow(omega, i), C.get(i))).get(0));
-                complejo.add(1, rest_en_C(B.get(i), prodPorEsc_en_C((int)Math.pow(omega, i), C.get(i))).get(1));
-                A.add((N/2)+i, complejo);
+                complejo.add(0, rest_en_C(B.get(i), mult_en_C(potencia_en_C(omega, i), C.get(i))).get(0));
+                complejo.add(1, rest_en_C(B.get(i), mult_en_C(potencia_en_C(omega, i), C.get(i))).get(1));
+                A.add((potDe2/2)+i, complejo);
             }
         }
         return A;
@@ -162,31 +195,86 @@ public class CS_Practica_2 {
     
     
     /**
-     * 
-     * @param N
-     * @param omega
-     * @param polA
-     * @return 
+     * Transformada inversa de Fourier, hace una llamada a FFT_en_C(Integer potDe2, Double omega, ArrayList<ArrayList<Double>> polA)
+     * pero pasandole por parametro la inversa de omega calculada segun la formula de coseno y seno.
+     * @param potDe2 es la menor potencia de 2 tal que este numero sea mayor que la suma del grado de los dos polinomios que se
+     * multiplicaran en multiplicacion_FFT_en_C, dicho metodo hara llamadas a este.
+     * @param omega una raiz 2^N -esima primitiva de la unidad que se le pasara desde multiplicacion_FFT_en_C el las llamadas.
+     * @param polC debe ser un polinomio de numeros complejos de grado menor que N
+     * @return polinomio de numeros complejos con la solucion
      */
-    public static ArrayList<ArrayList<Double>> IFFT_en_C(Integer N, Integer omega, ArrayList<ArrayList<Double>> polA){
-        ArrayList<ArrayList<Double>> A=new ArrayList<ArrayList<Double>>();
+    public static ArrayList<ArrayList<Double>> IFFT_en_C(Integer potDe2, ArrayList<Double> omega, ArrayList<ArrayList<Double>> polC){
+        ArrayList<ArrayList<Double>> polSol=new ArrayList<ArrayList<Double>>();
+        ArrayList<ArrayList<Double>> polAux=new ArrayList<ArrayList<Double>>();
+        ArrayList<Double>invOmega=new ArrayList<>();
+        ArrayList<Double>complejo=new ArrayList<>();
         
-        return A;
+        //Calcular el inverso de omega, se hace cambiando el signo de la parte imaginaria
+        invOmega.add(0, Math.cos((2*Math.PI)/potDe2));
+        invOmega.add(1, -1*(Math.sin((2*Math.PI)/potDe2)));
+        
+        //Llamar a 'FFT_en_C' pero con el inverso de omega
+        polAux=FFT_en_C(potDe2, invOmega, polC);
+        
+        //Multiplicar cada uno de los elementos del polinomio devuelto por 'FFT_en_C' por el inverso de 2^N y el nuemo polinomio sera la solucion
+        Double invPotDe2=inverso(potDe2);
+        
+        for(int i=0;i<polAux.size();i++){
+            complejo.add(0, polAux.get(i).get(0));
+            complejo.add(1, polAux.get(i).get(1));
+            polSol.set(i, prodPorEsc_en_C(invPotDe2, complejo));
+        }
+        return polSol;
     }
     
     
     /**
-     * 
-     * @param polA
-     * @param polB
-     * @param m
-     * @param n
-     * @return 
+     * Multiplicacion rapida de polinomios mediante FFT.
+     * El grado de cada polinomio (n y m) es el tamaño del polinomio menos uno, ya que el indice de cada ArrayList 
+     * nos indica el exponente al que esta elevado el coeficiente que ocupa esa posicion.
+     * Por tanto hay que tener en cuenta rellenar los coeficientes nulos del polinomio con ceros en el ArrayList.
+     * @param polA polinomio de numeros complejos que se va a multiplicar.
+     * @param polB polinomio de numeros complejos que se va a multiplicar.
+     * @param m grado del polinomio polA.
+     * @param n grado del polinomio polB.
+     * @return polinomio de numeros complejos solucion.
      */
-    public static ArrayList<ArrayList<Double>> multiplicacion_FFT_en_C(ArrayList<Integer> polA, ArrayList<Integer> polB, Integer m, Integer n){
-        ArrayList<ArrayList<Double>> polC=new ArrayList<ArrayList<Double>>();
+    public static ArrayList<ArrayList<Double>> multiplicacion_FFT_en_C(ArrayList<ArrayList<Double>> polA, ArrayList<ArrayList<Double>> polB, Integer m, Integer n){
+        ArrayList<ArrayList<Double>> polSol=new ArrayList<ArrayList<Double>>();
+        ArrayList<ArrayList<Double>> A=new ArrayList<ArrayList<Double>>();
+        ArrayList<ArrayList<Double>> B=new ArrayList<ArrayList<Double>>();
+        ArrayList<ArrayList<Double>> C=new ArrayList<ArrayList<Double>>();
+        ArrayList<Double>omega=new ArrayList<>();
+        ArrayList<Double>cmpljCero=new ArrayList<>();
+        cmpljCero.add(0, 0.0);
+        cmpljCero.add(1, 0.0);
         
-        return polC;
+        //Calcular primer entero tal que m+n < 2^N
+        Integer N=0;
+        while((m+n -(int) Math.pow( 2, N))>0){
+            N++;
+        }
+        //Calcular omega=raiz 2^N-esima primitiva de la unidad (PI=180)
+        omega.add(0, Math.cos((2*Math.PI)/Math.pow(2, N)));
+        omega.add(1, Math.sin((2*Math.PI)/Math.pow(2, N)));
+        
+        //Antes de llamar a 'FFT_en_C' hay que añadir ceros al final de polA y polB hasta que tengan un tamaño igual a 2^N
+        for(int i=polA.size();i<(int) Math.pow( 2, N);i++)
+            polA.add(i,cmpljCero);
+        for(int i=polB.size();i<(int) Math.pow( 2, N);i++)
+            polB.add(i,cmpljCero);
+        
+        A=FFT_en_C((int) Math.pow( 2, N), omega, polA);
+        B=FFT_en_C((int) Math.pow( 2, N), omega, polB);
+
+        for(int i=0;i<((int) Math.pow( 2, N));i++){
+            C.add(i, mult_en_C(A.get(i), B.get(i)));
+        }
+       
+        //Llamada a la transformada de Fourier Inversa.
+        polSol=IFFT_en_C((int)Math.pow( 2, N), omega, C);
+
+        return polSol;
     }
     
     
@@ -248,39 +336,32 @@ public class CS_Practica_2 {
         }
         return pol;
    }
-   
-   
-   //***************OPERACIONES PARA NUMEROS EN Z_41******************
-   
-   
-   
-   
-   
-   
-   //***************OPERACIONES PARA NUMEROS EN Z_257******************
-   
-   
-   
-   
-   
-   //***************OPERACIONES PARA NUMEROS EN Z_p********************
-   
-    
-   
+       
    
     public static void main(String[] args) {
         
         ArrayList<ArrayList<Double>> polA=new ArrayList<ArrayList<Double>>();
         ArrayList<ArrayList<Double>> polB=new ArrayList<ArrayList<Double>>();
-        ArrayList<ArrayList<Double>> polC=new ArrayList<ArrayList<Double>>();
-         
-
-        System.out.print("\nINTRODUCE EL PRIMER POLINOMIO EN C\n");
+        ArrayList<ArrayList<Double>> polSolEsc=new ArrayList<ArrayList<Double>>();
+        ArrayList<ArrayList<Double>> polSolFFT=new ArrayList<ArrayList<Double>>();
+        
+        System.out.print("\nINTRODUCE EL PRIMER POLINOMIO DE COMPLEJOS:\n");
         polA=leer_polinomio_en_C();
-        System.out.print("\nINTRODUCE EL SEGUNDO POLINOMIO EN C\n");
-        polB=leer_polinomio_en_C();            
+        System.out.print("\nINTRODUCE EL SEGUNDO POLINOMIO DE COMPLEJOS:\n");
+        polB=leer_polinomio_en_C(); 
        
-        polC=multiplicacion_escuela_en_C(polA, polB);
-        mostrar_polinomio_en_C(polC);
+        polSolEsc=multiplicacion_escuela_en_C(polA, polB);
+        System.out.print("\nResultado en C de multiplicacion ESCUELA:\n");
+        mostrar_polinomio_en_C(polSolEsc);
+        
+        /**El grado de cada polinomio (n y m) es el tamaño del polinomio menos uno, ya que el indice de cada ArrayList 
+         * nos indica el exponente al que esta elevado el coeficiente que ocupa esa posicion.
+         * Por tanto hay que tener en cuenta rellenar los coeficientes nulos del polinomio con ceros en el ArrayList.
+         */ 
+        polSolFFT=multiplicacion_FFT_en_C(polA, polB, polA.size()-1, polB.size()-1);
+        System.out.print("\nResultado en C de multiplicacion rapida mediante FFT:\n");
+        mostrar_polinomio_en_C(polSolFFT);
     }
 }
+
+
