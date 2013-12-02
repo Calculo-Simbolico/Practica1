@@ -1,6 +1,8 @@
 package cs_practica_2;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -16,7 +18,7 @@ public class op_En_Complejos {
      */
     public static ArrayList<Double> mult_en_C(ArrayList<Double> complejoA, ArrayList<Double> complejoB){
         ArrayList<Double> complejoC=new ArrayList<Double>();
-             
+           
         complejoC.add(0, (complejoA.get(0)*complejoB.get(0)) - (complejoA.get(1)*complejoB.get(1)));
         complejoC.add(1, (complejoA.get(0)*complejoB.get(1)) + (complejoA.get(1)*complejoB.get(0)));
         
@@ -78,19 +80,27 @@ public class op_En_Complejos {
      * @return numero complejo solucion.
      */
    public static ArrayList<Double> potencia_en_C(ArrayList<Double> complejoA, Integer exp){
-        ArrayList<Double> complejo=new ArrayList<Double>();
+        ArrayList<Double> complejoSol=new ArrayList<Double>();
         ArrayList<Double> complejoAux=new ArrayList<Double>();
+        ArrayList<Double> complejoUno=new ArrayList<Double>(); 
+        complejoUno.add(0, 1.0);
+        complejoUno.add(1, 0.0);
         
-        complejoAux=complejoA;
-
-        for(int i=1;i<exp;i++){
-            complejo=mult_en_C(complejoA, complejoAux);
-            complejoAux=complejo;
+        if(exp==0)
+            return complejoUno;
+        else if(exp==1)
+            return complejoA;
+        else{
+            complejoAux=complejoA;
+            for(int i=1;i<exp;i++){
+                complejoSol=mult_en_C(complejoA, complejoAux);
+                complejoAux=complejoSol;
+            }
+        return complejoSol;
         }
-        return complejo;
     }
     
-    
+     
     /**
      * Calcula el inverso de un numero num haciendo 1/num 
      * @param num numero del cual se va a calcular el inverso
@@ -155,7 +165,14 @@ public class op_En_Complejos {
         ArrayList<ArrayList<Double>> polB=new ArrayList<ArrayList<Double>>();
         ArrayList<ArrayList<Double>> polC=new ArrayList<ArrayList<Double>>();
         ArrayList<Double>complejo=new ArrayList<>();
-        
+        ArrayList<Double>cmpljCero=new ArrayList<>();
+        cmpljCero.add(0, 0.0);
+        cmpljCero.add(1, 0.0);
+                                                                                                               System.out.print("(\n\n\n(FFT_en_C) potDe2 = "+potDe2);
+        //Inicializar A con ceros con un tamaño igual a 2^N 
+        for(int i=0;i<(potDe2);i++){
+            A.add(cmpljCero);
+        }
         if(potDe2==1){ 
             complejo.add(0, polA.get(0).get(0));
             complejo.add(1, polA.get(0).get(1));
@@ -178,18 +195,26 @@ public class op_En_Complejos {
                     polC.add(complejo2);
                 }
             }
+                                                                                                            System.out.print("(\n(FFT_en_C con potDe2="+potDe2+") polB <-- "+polB);
+                                                                                                            System.out.print("(\n(FFT_en_C con potDe2="+potDe2+") polC <-- "+polC);
+
+                                                                                                            System.out.print("\n(FFT_en_C con potDe2="+potDe2+") B <-- FFT_en_C("+potDe2/2+", "+potencia_en_C(omega, 2)+", "+polB);
             B=FFT_en_C(potDe2/2, potencia_en_C(omega, 2), polB);
+                                                                                                            System.out.print("\n(FFT_en_C con potDe2="+potDe2+") B <-- "+B);
+                                                                                                            System.out.print("\n(FFT_en_C con potDe2="+potDe2+") C <-- FFT_en_C("+potDe2/2+", "+potencia_en_C(omega, 2)+", "+polC);
             C=FFT_en_C(potDe2/2, potencia_en_C(omega, 2), polC);
+                                                                                                            System.out.print("\n(FFT_en_C con potDe2="+potDe2+") C <-- "+C);
             
             for(int i=0;i<(potDe2/2);i++){
                 complejo.add(0, sum_en_C(B.get(i), mult_en_C(potencia_en_C(omega, i), C.get(i))).get(0));
                 complejo.add(1, sum_en_C(B.get(i), mult_en_C(potencia_en_C(omega, i), C.get(i))).get(1));
-                A.add(i, complejo);
+                A.set(i, complejo);
                 complejo.add(0, rest_en_C(B.get(i), mult_en_C(potencia_en_C(omega, i), C.get(i))).get(0));
                 complejo.add(1, rest_en_C(B.get(i), mult_en_C(potencia_en_C(omega, i), C.get(i))).get(1));
-                A.add((potDe2/2)+i, complejo);
+                A.set((potDe2/2)+i, complejo);
             }
         }
+                                                                                                             System.out.print("\n(FFT_en_C con potDe2="+potDe2+") return("+A+")");
         return A;
     }
     
@@ -212,7 +237,7 @@ public class op_En_Complejos {
         //Calcular el inverso de omega, se hace cambiando el signo de la parte imaginaria
         invOmega.add(0, Math.cos((2*Math.PI)/potDe2));
         invOmega.add(1, -1*(Math.sin((2*Math.PI)/potDe2)));
-        
+                                                                                                    System.out.print("(\n(IFFT_en_C)invOmega = "+invOmega);       
         //Llamar a 'FFT_en_C' pero con el inverso de omega
         polAux=FFT_en_C(potDe2, invOmega, polC);
         
@@ -222,7 +247,7 @@ public class op_En_Complejos {
         for(int i=0;i<polAux.size();i++){
             complejo.add(0, polAux.get(i).get(0));
             complejo.add(1, polAux.get(i).get(1));
-            polSol.set(i, prodPorEsc_en_C(invPotDe2, complejo));
+            polSol.add(i, prodPorEsc_en_C(invPotDe2, complejo));
         }
         return polSol;
     }
@@ -254,19 +279,24 @@ public class op_En_Complejos {
         while((m+n -(int) Math.pow( 2, N))>0){
             N++;
         }
+                                                                                                                    System.out.print("(\n(multiplicacion_FFT_en_C)N = "+N);  
         //Calcular omega=raiz 2^N-esima primitiva de la unidad (PI=180)
         omega.add(0, Math.cos((2*Math.PI)/Math.pow(2, N)));
         omega.add(1, Math.sin((2*Math.PI)/Math.pow(2, N)));
-        
+        //omega.add(0, 9.0);
+        //omega.add(1, 0.0);
+                                                                                                             System.out.print("(\n(multiplicacion_FFT_en_C)omega = ("+omega.get(0)+", "+omega.get(1)+")");       
         //Antes de llamar a 'FFT_en_C' hay que añadir ceros al final de polA y polB hasta que tengan un tamaño igual a 2^N
         for(int i=polA.size();i<(int) Math.pow( 2, N);i++)
             polA.add(i,cmpljCero);
         for(int i=polB.size();i<(int) Math.pow( 2, N);i++)
             polB.add(i,cmpljCero);
-        
+                                                                                                                    System.out.print("\n(multiplicacion_FFT_en_C)FFT_en_C("+(int) Math.pow( 2, N)+", "+omega+", "+polA);
         A=FFT_en_C((int) Math.pow( 2, N), omega, polA);
+                                                                                                                    System.out.print("\n(multiplicacion_FFT_en_C) A <-- "+A);
+                                                                                                                    System.out.print("\n(multiplicacion_FFT_en_C)FFT_en_C("+(int) Math.pow( 2, N)+", "+omega+", "+polB);
         B=FFT_en_C((int) Math.pow( 2, N), omega, polB);
-
+                                                                                                                    System.out.print("\n(multiplicacion_FFT_en_C) B <-- "+B);
         for(int i=0;i<((int) Math.pow( 2, N));i++){
             C.add(i, mult_en_C(A.get(i), B.get(i)));
         }
@@ -336,17 +366,100 @@ public class op_En_Complejos {
         }
         return pol;
    }
-       
    
-    public static void main(String[] args) {
+   
+   /**
+    * Metodo usado para las entradas desde ficheros de texto 
+    * @return un objeto BufferedReader el cual sera leido desde el metodo que llame a este o null si el fichero esta vacio
+    * @throws IOException 
+    */
+    public static ArrayList<ArrayList<ArrayList<Double>>> leer_polinomio_en_C_fichero() throws IOException { 
+        ArrayList<ArrayList<ArrayList<Double>>> listPolLeidos=new ArrayList<ArrayList<ArrayList<Double>>>();
+        ArrayList<ArrayList<Double>> polLeido1=new ArrayList<ArrayList<Double>>();
+        ArrayList<ArrayList<Double>> polLeido2=new ArrayList<ArrayList<Double>>();
+        FileReader fr = new FileReader("C:\\Users\\Asus\\Documents\\GitHub\\Practica1\\CS_Practica_2\\src\\cs_practica_2\\entrada.txt");
+        BufferedReader entrada = new BufferedReader(fr);
+        String polinomio = null;
+        String input=new String();
+ 
+        input=entrada.readLine();
+        polinomio=input;
+        int i=0;
+
+        while(polinomio.charAt(i)!='*' && i<polinomio.length()){ 
+                if(polinomio.charAt(i)=='('){
+                    ArrayList<Double>complejo=new ArrayList<>();
+                    i++;
+                    String real="";
+                    while(polinomio.charAt(i)!=',' && i<polinomio.length()){
+                       real+=polinomio.charAt(i);
+                       i++;
+                    }
+                    Double valor=Double.parseDouble(real);
+                    complejo.add(0,valor);
+
+                    i++;
+                    String imag="";
+                    while(polinomio.charAt(i)!=')' && i<polinomio.length()){
+                       imag+=polinomio.charAt(i);
+                       i++;
+                    }
+                    valor=Double.parseDouble(imag);
+                    complejo.add(1,valor);
+
+                    polLeido1.add(complejo);
+                }
+                else
+                    i++;
+            }
+            listPolLeidos.add(polLeido1);
+            
+            while(i<polinomio.length()){ 
+            if(polinomio.charAt(i)=='('){
+                    ArrayList<Double>complejo=new ArrayList<>();
+                    i++;
+                    String real="";
+                    while(polinomio.charAt(i)!=',' && i<polinomio.length()){
+                       real+=polinomio.charAt(i);
+                       i++;
+                    }
+                    Double valor=Double.parseDouble(real);
+                    complejo.add(0,valor);
+
+                    i++;
+                    String imag="";
+                    while(polinomio.charAt(i)!=')' && i<polinomio.length()){
+                       imag+=polinomio.charAt(i);
+                       i++;
+                    }
+                    valor=Double.parseDouble(imag);
+                    complejo.add(1,valor);
+
+                    polLeido2.add(complejo);
+                }
+                else
+                    i++;
+            }
+            listPolLeidos.add(polLeido2);
+        
+        fr.close();
+        return listPolLeidos;
+    }   
+    
+
+    public static void main(String[] args) throws IOException {
         
         ArrayList<ArrayList<Double>> polA=new ArrayList<ArrayList<Double>>();
         ArrayList<ArrayList<Double>> polB=new ArrayList<ArrayList<Double>>();
         ArrayList<ArrayList<Double>> polSolEsc=new ArrayList<ArrayList<Double>>();
-        ArrayList<ArrayList<Double>> polSolFFT=new ArrayList<ArrayList<Double>>();
+        ArrayList<ArrayList<Double>> polSolFFT=new ArrayList<ArrayList<Double>>();  
+        
+        System.out.print("\ncos(PI/2) = "+Math.cos((Math.PI)/2.0));
+        System.out.print("\ncos(PI/2) = "+Math.cos((Math.PI)));
         
         System.out.print("\nINTRODUCE EL PRIMER POLINOMIO DE COMPLEJOS:\n");
         polA=leer_polinomio_en_C();
+  
         System.out.print("\nINTRODUCE EL SEGUNDO POLINOMIO DE COMPLEJOS:\n");
         polB=leer_polinomio_en_C(); 
        
@@ -354,10 +467,10 @@ public class op_En_Complejos {
         System.out.print("\nResultado en C de multiplicacion ESCUELA:\n");
         mostrar_polinomio_en_C(polSolEsc);
         
-        /**El grado de cada polinomio (n y m) es el tamaño del polinomio menos uno, ya que el indice de cada ArrayList 
-         * nos indica el exponente al que esta elevado el coeficiente que ocupa esa posicion.
-         * Por tanto hay que tener en cuenta rellenar los coeficientes nulos del polinomio con ceros en el ArrayList.
-         */ 
+        //El grado de cada polinomio (n y m) es el tamaño del polinomio menos uno, ya que el indice de cada ArrayList 
+        //nos indica el exponente al que esta elevado el coeficiente que ocupa esa posicion.
+        //Por tanto hay que tener en cuenta rellenar los coeficientes nulos del polinomio con ceros en el ArrayList.
+        
         polSolFFT=multiplicacion_FFT_en_C(polA, polB, polA.size()-1, polB.size()-1);
         System.out.print("\nResultado en C de multiplicacion rapida mediante FFT:\n");
         mostrar_polinomio_en_C(polSolFFT);

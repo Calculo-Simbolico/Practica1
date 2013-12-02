@@ -4,7 +4,7 @@ package cs_practica_2;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.util.*;
 
 public class op_En_Z_p {
 
@@ -18,46 +18,56 @@ public class op_En_Z_p {
      */
     public static Integer inverso_en_Zp(Integer p, Integer num){
         Integer invs=0, x=0, y=0, x2=1, x1=0, y2=0, y1=1, q=0, r=0;
+        Integer mod=p;
         if(num==0){
             invs=0;
         }
         else{
             while(num>0){
-                q = (p/num); 
-                r = p - q*num; 
+                q = (mod/num); 
+                r = mod - q*num; 
                 x = x2-q*x1; 
                 y = y2 - q*y1; 
-                p = num; 
+                mod = num; 
                 num = r; 
                 x2 = x1; 
                 x1 = x; 
                 y2 = y1;             
                 y1 = y; 
             }
-            invs=y2; 
+            invs= y2; 
         }
-        return invs;
+        if(invs<0)
+            return (p+invs); //Reducir modulo p por si el resultado es negativo
+        else 
+            return invs;
     }  
+   
     
     /**
-     * Calcula la raiz n-esima primitiva de la unidad en Zp con p un numero primo impar.
+     * Calcula la raiz n-esima primitiva de la unidad en Zp.
      * @return la raiz n-esima primitiva de la unidad.
-     */
-    public static Integer raiz_n_esima_primitiva(){
-        Integer raiz = 0;
+    */
+    public static Integer raiz_n_esima_primitiva_en_Zp(Integer potDe2, Integer p){
+        Integer raiz;
+        Integer generador = 3;
+        Integer p_1=p-1;
+        
+        raiz=modulo_en_Zp(p, (int)Math.pow(generador, (p_1/potDe2)));
         
         return raiz;  
     }
     
     
      /**
-     * Calcula se hace modulo de un numero en Zp con p un numero primo impar.
+     * Calcula el modulo de un numero en Zp con p un numero primo impar.
      * @param p modulo.
      * @param num numero del cual se va a calcular el modulo.
      * @return el modulo del numero.
      */
     public static Integer modulo_en_Zp(Integer p, Integer num){
         Integer modulo = 0;
+        
         modulo=num%p;
         
         if(modulo<0)
@@ -91,9 +101,9 @@ public class op_En_Z_p {
     
     /**
      * Transformada rapida de Fourier
-     * @param potDe2 es la menor potencia de 2 tal que este numero sea mayor que la suma del grado de los dos polinomios que se
-     * multiplicaran en multiplicacion_FFT_en_C, dicho metodo hara llamadas a este.
-     * @param omega una raiz 2^N -esima primitiva de la unidad que se le pasara desde multiplicacion_FFT_en_C el las llamadas.
+     * @param N es el exponente de la menor potencia de 2 tal que este numero sea mayor que la suma del grado de los dos polinomios que se
+     * multiplicaran en multiplicacion_FFT_en_Zp, dicho metodo hara llamadas a este.
+     * @param omega una raiz 2^N -esima primitiva de la unidad que se le pasara desde multiplicacion_FFT_en_Zp el las llamadas.
      * @param polA debe ser un polinomio de numeros de grado menor que N
      * @param p numero primo impar.
      * @return polinomio de numeros con la solucion
@@ -105,13 +115,15 @@ public class op_En_Z_p {
         ArrayList<Integer> polB=new ArrayList<Integer>();
         ArrayList<Integer> polC=new ArrayList<Integer>();
         
+System.out.print("(\n(FFT_en_Zp) N="+N); 
+
         //Inicializar A con ceros con un tamaño igual a 2^N 
         for(int i=0;i<((int)Math.pow(2, N));i++){
             A.add(0);
         }
         
         if((int)Math.pow(2, N)==1){ 
-            A.add(0, polA.get(0));
+            A.set(0, polA.get(0));
         }
         else{
             for(int i=0;i<polA.size();i++){
@@ -124,7 +136,9 @@ public class op_En_Z_p {
                     polC.add(polA.get(i));
                 }
             }
+System.out.print("\n(FFT_en_Zp con N="+N+") B <-- FFT_en_Zp("+(N-1)+", "+modulo_en_Zp(p, (int)Math.pow(omega, 2))+", "+polB+", "+p);
             B=FFT_en_Zp(N-1, modulo_en_Zp(p, (int)Math.pow(omega, 2)), polB, p);
+System.out.print("\n(FFT_en_Zp con N="+N+") C <-- FFT_en_Zp("+(N-1)+", "+modulo_en_Zp(p, (int)Math.pow(omega, 2))+", "+polC+", "+p);
             C=FFT_en_Zp(N-1, modulo_en_Zp(p, (int)Math.pow(omega, 2)), polC, p);
 
             for(int i=0;i<((int)Math.pow(2, N-1));i++){
@@ -132,6 +146,7 @@ public class op_En_Z_p {
                 A.set(((int)Math.pow(2, N-1))+i, modulo_en_Zp(p, B.get(i)-((int)Math.pow(omega, i)* C.get(i))));
             }
         }
+System.out.print("\n(FFT_en_Zp con N="+N+") return("+A+")");
         return A;
     }
     
@@ -139,7 +154,7 @@ public class op_En_Z_p {
     /**
      * Transformada inversa de Fourier, hace una llamada a FFT_en_Zp(Integer potDe2, Double omega, ArrayList<ArrayList<Double>> polA, Integer p)
      * pero pasandole por parametro la inversa de omega.
-     * @param potDe2 es la menor potencia de 2 tal que este numero sea mayor que la suma del grado de los dos polinomios que se
+     * @param N es el exponente de la menor potencia de 2 tal que este numero sea mayor que la suma del grado de los dos polinomios que se
      * multiplicaran en multiplicacion_FFT_en_Zp, dicho metodo hara llamadas a este.
      * @param omega una raiz 2^N -esima primitiva de la unidad que se le pasara desde multiplicacion_FFT_en_Zp el las llamadas.
      * @param polC debe ser un polinomio de grado menor que N.
@@ -152,17 +167,18 @@ public class op_En_Z_p {
         
         //Calcular el inverso de omega
         Integer invOmega=inverso_en_Zp(p, omega);
-
-        //Llamar a 'FFT_en_C' pero con el inverso de omega
+System.out.print("(\ninvOmega = "+invOmega);
+        //Llamar a 'FFT_en_Zp' pero con el inverso de omega
 
         polAux=FFT_en_Zp(N, invOmega, polC, p);
         
         //Multiplicar cada uno de los elementos del polinomio devuelto por 'FFT_en_Zp' por el inverso de 2^N y el nuemo polinomio sera la solucion
         Integer invPotDe2=inverso_en_Zp(p, ((int) Math.pow( 2, N)));
-
+System.out.print("(\ninvPotDe2 = "+invPotDe2);
         for(int i=0;i<polAux.size();i++){
             polSol.add(i, modulo_en_Zp(p, invPotDe2*polAux.get(i)));
         }
+        System.out.print("\n(IFFT_en_Zp) return("+polSol+")");
         return polSol;
     }
     
@@ -188,13 +204,15 @@ public class op_En_Z_p {
         
         //Calcular primer entero tal que m+n < 2^N
         Integer N=0;
-        while((m+n -(int) Math.pow( 2, N))>0){
+        while(((m+n) -(int) Math.pow( 2, N))>0){
             N++;
         }
+ System.out.print("(\nN = "+N+"(\n");
         //Calcular omega=raiz 2^N-esima primitiva de la unidad
-        omega=9;//raiz_n_esima_primitiva();//SIN HACER
-        
-        //Antes de llamar a 'FFT_en_C' hay que añadir ceros al final de polA y polB hasta que tengan un tamaño igual a 2^N
+        omega=raiz_n_esima_primitiva_en_Zp(((int) Math.pow( 2, N)), p);
+System.out.print("(\nomega = "+omega); 
+
+        //Antes de llamar a 'FFT_en_Zp' hay que añadir ceros al final de polA y polB hasta que tengan un tamaño igual a 2^N
         for(int i=polA.size();i<((int) Math.pow( 2, N));i++)
             polA.add(i,0);
         for(int i=polB.size();i<((int) Math.pow( 2, N));i++)
@@ -231,7 +249,7 @@ public class op_En_Z_p {
     * @param p numero primo impar.
     * @return polinomio de numeros complejo
     */
-   public static ArrayList<Integer> leer_polinomio_en_Zp(Integer p){
+   public static ArrayList<Integer> leer_polinomio_en_Zp(Integer p) throws IOException{
                 ArrayList<Integer> pol=new ArrayList<Integer>();
                 InputStreamReader isr = new InputStreamReader(System.in);
                 BufferedReader br = new BufferedReader (isr); 
@@ -287,6 +305,8 @@ public class op_En_Z_p {
         polSolFFT=multiplicacion_FFT_en_Zp(polA, polB, polA.size()-1, polB.size()-1, p);
         System.out.print("\nResultado en Zp de multiplicacion rapida mediante FFT:\n");
         mostrar_polinomio_en_Zp(polSolFFT);
+        
+        lectura.close();
     }
 }
 
