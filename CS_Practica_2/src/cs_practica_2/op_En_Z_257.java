@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.*;
+import java.util.Random;
 
 public class op_En_Z_257 {
        
@@ -48,14 +48,14 @@ public class op_En_Z_257 {
      * @param num numero el cual se va a factorizar.
      * @return un ArrayList con todos los factores del numero.
      */
-    public static ArrayList<Integer> factorizar_en_Z_257(Integer num){
+    public static ArrayList<Integer> factorizar_en_Z_257(){
         ArrayList<Integer> factores=new ArrayList<Integer>();
         ArrayList<Integer> primos=new ArrayList<Integer>();
         Integer q;
         primos.add(2);primos.add(3);primos.add(5);primos.add(7);primos.add(11);primos.add(13);primos.add(17);primos.add(19);primos.add(23);primos.add(29);primos.add(31);primos.add(37);  
         
         int i=0;
-        q=num;
+        q=256;
         while(q > 1){
             if(q%primos.get(i)==0){ 
                 q=q/primos.get(i);
@@ -67,31 +67,32 @@ public class op_En_Z_257 {
         return factores;
     }
     
-    
+   
     /**
-     * Calcula la raiz potDe2-esima primitiva de la unidad en Z_257 (Cuando se tiene un primo pequeño, 
-     * se pueden localizar las raíces primitivas por “ensayo y error”,construyendo una tabla de potencias).
-     * @return la raiz potDe2-esima primitiva de la unidad.
+     * Calcula la raiz n-esima primitiva de la unidad en Z_257.
+     * @return la raiz n-esima primitiva de la unidad.
      */
-    public static Integer raiz_n_esima_primitiva_en_Z_257(Integer potDe2){
-        boolean noRepetido=true;
-        boolean esRaiz=false;
-        Integer raiz = 0;
-        int j=1;
-        int i=1;
+    public static Integer raiz_n_esima_primitiva_en_Z_257(Integer N){
+        Integer raiz=128;
         
-        for(i=1;i<=potDe2 && !esRaiz;i++){
-            HashSet<Integer> potencias = new HashSet<Integer>();
-            noRepetido=true;
-            for(j=1;j<=potDe2 && noRepetido;j++){
-                noRepetido=potencias.add(modulo_en_Z_257((int)Math.pow(i, j)));
-            }
-            if(noRepetido && ((int)Math.pow(i, j))==1){
-                esRaiz=true;
-            }
-        }
-        raiz = i;
-        return raiz;
+        if(N==1)
+            raiz=256;
+        else if(N==2)
+            raiz=16;
+        else if(N==3)
+            raiz=4;
+        else if(N==4)
+            raiz=2;
+        else if(N==5)
+            raiz=256;
+        else if(N==6)
+            raiz=256;
+        else if(N==7)
+            raiz=256;
+        else if(N==8)
+            raiz=256;
+        
+        return raiz;  
     }
     
     
@@ -155,7 +156,7 @@ public class op_En_Z_257 {
         }
         
         if((int)Math.pow(2, N)==1){ 
-            A.add(0, polA.get(0));
+            A.set(0, polA.get(0));
         }
         else{
             for(int i=0;i<polA.size();i++){
@@ -195,15 +196,10 @@ public class op_En_Z_257 {
         
         //Calcular el inverso de omega
         Integer invOmega=inverso_en_Z_257(omega);
-System.out.print("(\ninvOmega = "+invOmega);
-
         //Llamar a 'FFT_en_Z_257' pero con el inverso de omega
-
         polAux=FFT_en_Z_257(N, invOmega, polC);
-        
         //Multiplicar cada uno de los elementos del polinomio devuelto por 'FFT_en_Z_257' por el inverso de 2^N y el nuevo polinomio sera la solucion
         Integer invPotDe2=inverso_en_Z_257(((int) Math.pow( 2, N)));
-System.out.print("(\ninvPotDe2 = "+invPotDe2);
         for(int i=0;i<polAux.size();i++){
             polSol.add(i, modulo_en_Z_257(invPotDe2*polAux.get(i)));
         }
@@ -229,15 +225,16 @@ System.out.print("(\ninvPotDe2 = "+invPotDe2);
         ArrayList<Integer> C=new ArrayList<Integer>();
         Integer omega=0;
         
-        //Calcular primer entero tal que m+n < 2^N
+        //Calcular primer entero tal que m+n < 2^N (¡¡¡Mayor estricto!!!)
         Integer N=0;
-        while((m+n -(int) Math.pow( 2, N))>0){
+        while(((m+n) -(int) Math.pow( 2, N))>0){
             N++;
         }
-System.out.print("(\nN = "+N);
+        if(((int) Math.pow( 2, N))==(n+m))
+            N++;   
+
         //Calcular omega=raiz 2^N-esima primitiva de la unidad
-        omega=raiz_n_esima_primitiva_en_Z_257(((int) Math.pow( 2, N)));
-System.out.print("(\nomega = "+omega);
+        omega=raiz_n_esima_primitiva_en_Z_257(N);    System.out.print("\nN="+N+" omega="+omega);
         
         //Antes de llamar a 'FFT_en__Z_257' hay que añadir ceros al final de polA y polB hasta que tengan un tamaño igual a 2^N
         for(int i=polA.size();i<((int) Math.pow( 2, N));i++)
@@ -256,6 +253,16 @@ System.out.print("(\nomega = "+omega);
 
         return polSol;
     }
+    
+    
+     /**
+     * Elimina los ceros a la derecha de un polinomio
+     * @param pol el polinomio que se va a modificar.
+     */
+    public static void quitar_ceros_en_Z_257(ArrayList<Integer> pol){
+        for(int i=pol.size()-1;pol.get(i)==0;i--)
+            pol.remove(i);
+   }
        
    
     /**
@@ -304,31 +311,52 @@ System.out.print("(\nomega = "+omega);
         return pol;
    }
        
-   
-    public static void main(String[] args){
-        
-        ArrayList<Integer> polA=new ArrayList<Integer>();
-        ArrayList<Integer> polB=new ArrayList<Integer>();
+   public static void main(String[] args){
+       
         ArrayList<Integer> polSolEsc=new ArrayList<Integer>();
-        ArrayList<Integer> polSolFFT=new ArrayList<Integer>();
-          
+        ArrayList<Integer> polSolFFT=new ArrayList<Integer>();    
+        Random rnd = new Random();
+        rnd.setSeed(2014);
+        /*
         System.out.print("\nINTRODUCE EL PRIMER POLINOMIO DE NUMEROS EN Z_257:\n");
         polA=leer_polinomio_en_Z_257();
         System.out.print("\nINTRODUCE EL SEGUNDO POLINOMIO DE NUMEROS EN Z_257:\n");
         polB=leer_polinomio_en_Z_257(); 
-       
-        polSolEsc=multiplicacion_escuela_en_Z_257(polA, polB);
-        System.out.print("\nResultado en Z_257 de multiplicacion ESCUELA:\n");
-        mostrar_polinomio_en_Z_257(polSolEsc);
+
+        if((polA.size()-1)+(polB.size()-1)>=8){
+                System.out.print("\nNo existe en Z_257 una raiz de orden mayor a 8, la suma de los grados de los dos polinomios debe ser menor que 8.\n");
+                return;
+        }
+        */
+        for(int i=1;i<=129;i++){ 
+            ArrayList<Integer> polA=new ArrayList<Integer>();
+            ArrayList<Integer> polB=new ArrayList<Integer>();
+
+            for(int j=0;j<i;j++){
+                polA.add(j, modulo_en_Z_257(rnd.nextInt()));
+
+                if(j!=128)
+                    polB.add(j, modulo_en_Z_257(rnd.nextInt()));
+            }
+            System.out.print("\n\npolA="+polA+"      Grado de polA="+(polA.size()-1));
+            System.out.print("\npolB="+polB+"        Grado de polB="+(polB.size()-1));
+
+            polSolEsc=multiplicacion_escuela_en_Z_257(polA, polB);
+            if(polSolEsc.get(polSolEsc.size()-1) == 0)
+                  quitar_ceros_en_Z_257(polSolEsc);
+            System.out.print("\nResultado en Z_41 de multiplicacion ESCUELA:\n");
+            mostrar_polinomio_en_Z_257(polSolEsc);
+
+            /*El grado de cada polinomio (n y m) es el tamaño del polinomio menos uno, ya que el indice de cada ArrayList 
+             * nos indica el exponente al que esta elevado el coeficiente que ocupa esa posicion.
+             * Por tanto hay que tener en cuenta rellenar los coeficientes nulos del polinomio con ceros en el ArrayList.
+            */ 
+            polSolFFT=multiplicacion_FFT_en_Z_257(polA, polB, polA.size()-1, polB.size()-1);
+            if(polSolFFT.get(polSolFFT.size()-1) == 0)
+                  quitar_ceros_en_Z_257(polSolFFT);
+            System.out.print("\nResultado en Z_41 de multiplicacion rapida mediante FFT:\n");
+            mostrar_polinomio_en_Z_257(polSolFFT); 
+        }
         
-        //El grado de cada polinomio (n y m) es el tamaño del polinomio menos uno, ya que el indice de cada ArrayList 
-        //nos indica el exponente al que esta elevado el coeficiente que ocupa esa posicion.
-        //Por tanto hay que tener en cuenta rellenar los coeficientes nulos del polinomio con ceros en el ArrayList.
-     
-        polSolFFT=multiplicacion_FFT_en_Z_257(polA, polB, polA.size()-1, polB.size()-1);
-        System.out.print("\nResultado en Z_257 de multiplicacion rapida mediante FFT:\n");
-        mostrar_polinomio_en_Z_257(polSolFFT); 
     }
 }
-
-

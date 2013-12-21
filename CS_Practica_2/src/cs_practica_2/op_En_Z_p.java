@@ -50,7 +50,7 @@ public class op_En_Z_p {
     */
     public static Integer raiz_n_esima_primitiva_en_Zp(Integer potDe2, Integer p){
         Integer raiz;
-        Integer generador = 3;
+        Integer generador = 3;//@@@@@@@@@@@@@@@@ESTA PREFIJADO Y SE DEBE CALCULAR@@@@@@@@@@@@@@@@@@
         Integer p_1=p-1;
         
         raiz=modulo_en_Zp(p, (int)Math.pow(generador, (p_1/potDe2)));
@@ -115,8 +115,6 @@ public class op_En_Z_p {
         ArrayList<Integer> polB=new ArrayList<Integer>();
         ArrayList<Integer> polC=new ArrayList<Integer>();
         
-System.out.print("(\n(FFT_en_Zp) N="+N); 
-
         //Inicializar A con ceros con un tamaño igual a 2^N 
         for(int i=0;i<((int)Math.pow(2, N));i++){
             A.add(0);
@@ -136,9 +134,7 @@ System.out.print("(\n(FFT_en_Zp) N="+N);
                     polC.add(polA.get(i));
                 }
             }
-System.out.print("\n(FFT_en_Zp con N="+N+") B <-- FFT_en_Zp("+(N-1)+", "+modulo_en_Zp(p, (int)Math.pow(omega, 2))+", "+polB+", "+p);
             B=FFT_en_Zp(N-1, modulo_en_Zp(p, (int)Math.pow(omega, 2)), polB, p);
-System.out.print("\n(FFT_en_Zp con N="+N+") C <-- FFT_en_Zp("+(N-1)+", "+modulo_en_Zp(p, (int)Math.pow(omega, 2))+", "+polC+", "+p);
             C=FFT_en_Zp(N-1, modulo_en_Zp(p, (int)Math.pow(omega, 2)), polC, p);
 
             for(int i=0;i<((int)Math.pow(2, N-1));i++){
@@ -146,7 +142,6 @@ System.out.print("\n(FFT_en_Zp con N="+N+") C <-- FFT_en_Zp("+(N-1)+", "+modulo_
                 A.set(((int)Math.pow(2, N-1))+i, modulo_en_Zp(p, B.get(i)-((int)Math.pow(omega, i)* C.get(i))));
             }
         }
-System.out.print("\n(FFT_en_Zp con N="+N+") return("+A+")");
         return A;
     }
     
@@ -167,18 +162,13 @@ System.out.print("\n(FFT_en_Zp con N="+N+") return("+A+")");
         
         //Calcular el inverso de omega
         Integer invOmega=inverso_en_Zp(p, omega);
-System.out.print("(\ninvOmega = "+invOmega);
         //Llamar a 'FFT_en_Zp' pero con el inverso de omega
-
         polAux=FFT_en_Zp(N, invOmega, polC, p);
-        
         //Multiplicar cada uno de los elementos del polinomio devuelto por 'FFT_en_Zp' por el inverso de 2^N y el nuemo polinomio sera la solucion
         Integer invPotDe2=inverso_en_Zp(p, ((int) Math.pow( 2, N)));
-System.out.print("(\ninvPotDe2 = "+invPotDe2);
         for(int i=0;i<polAux.size();i++){
             polSol.add(i, modulo_en_Zp(p, invPotDe2*polAux.get(i)));
         }
-        System.out.print("\n(IFFT_en_Zp) return("+polSol+")");
         return polSol;
     }
     
@@ -202,22 +192,23 @@ System.out.print("(\ninvPotDe2 = "+invPotDe2);
         ArrayList<Integer> C=new ArrayList<Integer>();
         Integer omega=0;
         
-        //Calcular primer entero tal que m+n < 2^N
+        //Calcular primer entero tal que m+n < 2^N (¡¡¡Mayor estricto!!!)
         Integer N=0;
         while(((m+n) -(int) Math.pow( 2, N))>0){
             N++;
         }
- System.out.print("(\nN = "+N+"(\n");
-        //Calcular omega=raiz 2^N-esima primitiva de la unidad
-        omega=raiz_n_esima_primitiva_en_Zp(((int) Math.pow( 2, N)), p);
-System.out.print("(\nomega = "+omega); 
+        if(((int) Math.pow( 2, N))==(n+m))
+            N++;     System.out.print("\nN="+N);
 
+        //Calcular omega=raiz 2^N-esima primitiva de la unidad
+        omega=raiz_n_esima_primitiva_en_Zp(((int) Math.pow( 2, N)), p);    System.out.print("\nomega="+omega); 
+        
         //Antes de llamar a 'FFT_en_Zp' hay que añadir ceros al final de polA y polB hasta que tengan un tamaño igual a 2^N
         for(int i=polA.size();i<((int) Math.pow( 2, N));i++)
             polA.add(i,0);
         for(int i=polB.size();i<((int) Math.pow( 2, N));i++)
             polB.add(i,0);
-        
+
         A=FFT_en_Zp(N, omega, polA, p);
         B=FFT_en_Zp(N, omega, polB, p);
 
@@ -226,9 +217,19 @@ System.out.print("(\nomega = "+omega);
         }       
         //Llamada a la transformada de Fourier Inversa.
         polSol=IFFT_en_Zp(N, omega, C, p);
-
+        
         return polSol;
     }
+    
+    
+    /**
+     * Elimina los ceros a la derecha de un polinomio
+     * @param pol el polinomio que se va a modificar.
+     */
+    public static void quitar_ceros_en_Zp(ArrayList<Integer> pol){
+        for(int i=pol.size()-1;pol.get(i)==0;i--)
+            pol.remove(i);
+   }
     
     
     /**
@@ -293,16 +294,20 @@ System.out.print("(\nomega = "+omega);
         polA=leer_polinomio_en_Zp(p);
         System.out.print("\nINTRODUCE EL SEGUNDO POLINOMIO DE NUMEROS EN Zp:\n");
         polB=leer_polinomio_en_Zp(p);
+        
+        System.out.print("\nGrado de polA="+(polA.size()-1));
+        System.out.print("\nGrado de polB="+(polB.size()-1));
        
         polSolEsc=multiplicacion_escuela_en_Zp(polA, polB, p);
         System.out.print("\nResultado en Zp de multiplicacion ESCUELA:\n");
         mostrar_polinomio_en_Zp(polSolEsc);
         
-        /**El grado de cada polinomio (n y m) es el tamaño del polinomio menos uno, ya que el indice de cada ArrayList 
+        /*El grado de cada polinomio (n y m) es el tamaño del polinomio menos uno, ya que el indice de cada ArrayList 
          * nos indica el exponente al que esta elevado el coeficiente que ocupa esa posicion.
          * Por tanto hay que tener en cuenta rellenar los coeficientes nulos del polinomio con ceros en el ArrayList.
-         */ 
+        */ 
         polSolFFT=multiplicacion_FFT_en_Zp(polA, polB, polA.size()-1, polB.size()-1, p);
+        quitar_ceros_en_Zp(polSolFFT);
         System.out.print("\nResultado en Zp de multiplicacion rapida mediante FFT:\n");
         mostrar_polinomio_en_Zp(polSolFFT);
         

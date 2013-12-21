@@ -4,6 +4,7 @@ package cs_practica_2;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class op_En_Z_41 {
        
@@ -70,15 +71,14 @@ public class op_En_Z_41 {
     
     /**
      * Calcula la raiz n-esima primitiva de la unidad en Z_41.
+     * Se elige el 6 ya que (6^40/2)%41=38  (6^40/5)%41=10 los dos resultados distintos de 1, siendo 2 y 5 los dos factores
+     * primos en que se descompone 40=p-1.
      * @return la raiz n-esima primitiva de la unidad.
      */
     public static Integer raiz_n_esima_primitiva_en_Z_41(Integer potDe2){
         Integer raiz;
-        Integer generador = 4;
+        Integer generador = 6;
         Integer p_1=40;
-        
-        if(potDe2>8)
-            System.out.print("\nNo existe en Z_41 una raiz de orden mayor a 8, la suma de los grados de los dos polinomios debe ser menor que 8\n");
         
         raiz=modulo_en_Z_41((int)Math.pow(generador, (p_1/potDe2)));
         
@@ -146,7 +146,7 @@ public class op_En_Z_41 {
         }
         
         if((int)Math.pow(2, N)==1){ 
-            A.add(0, polA.get(0));
+            A.set(0, polA.get(0));
         }
         else{
             for(int i=0;i<polA.size();i++){
@@ -186,14 +186,10 @@ public class op_En_Z_41 {
         
         //Calcular el inverso de omega
         Integer invOmega=inverso_en_Z_41(omega);
-System.out.print("(\n(IFFT_en_Z_41) El inverso de omega es: "+invOmega);
         //Llamar a 'FFT_en__Z_41' pero con el inverso de omega
-
         polAux=FFT_en_Z_41(N, invOmega, polC);
-       
         //Multiplicar cada uno de los elementos del polinomio devuelto por 'FFT_en_Z_41' por el inverso de 2^N y el nuevo polinomio sera la solucion
         Integer invPotDe2=inverso_en_Z_41(((int) Math.pow( 2, N)));
-System.out.print("(\n(IFFT_en_Z_41) El inverso de invPotDe2 es: "+invPotDe2);
         for(int i=0;i<polAux.size();i++){
             polSol.add(i, modulo_en_Z_41(invPotDe2*polAux.get(i)));
         }
@@ -219,15 +215,16 @@ System.out.print("(\n(IFFT_en_Z_41) El inverso de invPotDe2 es: "+invPotDe2);
         ArrayList<Integer> C=new ArrayList<Integer>();
         Integer omega=0;
         
-        //Calcular primer entero tal que m+n < 2^N
+        //Calcular primer entero tal que m+n < 2^N (¡¡¡Mayor estricto!!!)
         Integer N=0;
-        while((m+n -(int) Math.pow( 2, N))>0){
+        while(((m+n) -(int) Math.pow( 2, N))>0){
             N++;
         }
-System.out.print("\n(multiplicacion_FFT_en_Z_41) El valor de N es: "+N);
+        if(((int) Math.pow( 2, N))==(n+m))
+            N++;
+
         //Calcular omega=raiz 2^N-esima primitiva de la unidad
-        omega=raiz_n_esima_primitiva_en_Z_41((int) Math.pow( 2, N));
-System.out.print("\n(multiplicacion_FFT_en_Z_41) El valor de omega es: "+omega);
+        omega=raiz_n_esima_primitiva_en_Z_41(((int) Math.pow( 2, N)));    System.out.print("\nN="+N+" omega="+omega);
         
         //Antes de llamar a 'FFT_en__Z_41' hay que añadir ceros al final de polA y polB hasta que tengan un tamaño igual a 2^N
         for(int i=polA.size();i<((int) Math.pow( 2, N));i++)
@@ -246,6 +243,16 @@ System.out.print("\n(multiplicacion_FFT_en_Z_41) El valor de omega es: "+omega);
 
         return polSol;
     }
+    
+     /**
+     * Elimina los ceros a la derecha de un polinomio
+     * @param pol el polinomio que se va a modificar.
+     */
+    public static void quitar_ceros_en_Z_41(ArrayList<Integer> pol){
+        if(pol.size()>0)
+            for(int i=pol.size()-1;pol.get(i)==0;i--)
+                pol.remove(i);
+   }
        
    
     /**
@@ -257,7 +264,7 @@ System.out.print("\n(multiplicacion_FFT_en_Z_41) El valor de omega es: "+omega);
         for(int i=0;i<pol.size()-1;i++)
             System.out.print(pol.get(i)+", ");
         System.out.print(pol.get(pol.size()-1));
-        System.out.print("]\n");
+        System.out.print("]");
    }
     
     
@@ -296,31 +303,51 @@ System.out.print("\n(multiplicacion_FFT_en_Z_41) El valor de omega es: "+omega);
        
 
     public static void main(String[] args){
-        
-        
-        //System.out.print("\n"+modulo_en_Z_41((int)Math.pow(4, 40/8)));
-        
-        ArrayList<Integer> polA=new ArrayList<Integer>();
-        ArrayList<Integer> polB=new ArrayList<Integer>();
+     
         ArrayList<Integer> polSolEsc=new ArrayList<Integer>();
-        ArrayList<Integer> polSolFFT=new ArrayList<Integer>();
-        
+        ArrayList<Integer> polSolFFT=new ArrayList<Integer>();    
+        Random rnd = new Random();
+    	rnd.setSeed(2014);
+        /*
         System.out.print("\nINTRODUCE EL PRIMER POLINOMIO DE NUMEROS EN Z_41:\n");
         polA=leer_polinomio_en_Z_41();
         System.out.print("\nINTRODUCE EL SEGUNDO POLINOMIO DE NUMEROS EN Z_41:\n");
         polB=leer_polinomio_en_Z_41(); 
-       
-        polSolEsc=multiplicacion_escuela_en_Z_41(polA, polB);
-        System.out.print("\nResultado en Z_41 de multiplicacion ESCUELA:\n");
-        mostrar_polinomio_en_Z_41(polSolEsc);
         
-        //El grado de cada polinomio (n y m) es el tamaño del polinomio menos uno, ya que el indice de cada ArrayList 
-        //nos indica el exponente al que esta elevado el coeficiente que ocupa esa posicion.
-        //Por tanto hay que tener en cuenta rellenar los coeficientes nulos del polinomio con ceros en el ArrayList.
-        
-        polSolFFT=multiplicacion_FFT_en_Z_41(polA, polB, polA.size()-1, polB.size()-1);
-        System.out.print("\nResultado en Z_41 de multiplicacion rapida mediante FFT:\n");
-        mostrar_polinomio_en_Z_41(polSolFFT); 
+        if((polA.size()-1)+(polB.size()-1)>=8){
+                System.out.print("\nNo existe en Z_41 una raiz de orden mayor a 8, la suma de los grados de los dos polinomios debe ser menor que 8.\n");
+                return;
+        }
+        */
+        for(int i=1;i<=5;i++){ 
+            ArrayList<Integer> polA=new ArrayList<Integer>();
+            ArrayList<Integer> polB=new ArrayList<Integer>();
+            
+            for(int j=0;j<i;j++){
+                polA.add(j, modulo_en_Z_41(rnd.nextInt()));
+                
+                if(j!=4)
+                    polB.add(j, modulo_en_Z_41(rnd.nextInt()));
+            }
+            System.out.print("\n\npolA="+polA+"      Grado de polA="+(polA.size()-1));
+            System.out.print("\npolB="+polB+"        Grado de polB="+(polB.size()-1));
+
+            polSolEsc=multiplicacion_escuela_en_Z_41(polA, polB);
+            if(polSolEsc.get(polSolEsc.size()-1) == 0)
+                  quitar_ceros_en_Z_41(polSolEsc);
+            System.out.print("\nResultado en Z_41 de multiplicacion ESCUELA:\n");
+            mostrar_polinomio_en_Z_41(polSolEsc);
+
+            /*El grado de cada polinomio (n y m) es el tamaño del polinomio menos uno, ya que el indice de cada ArrayList 
+             * nos indica el exponente al que esta elevado el coeficiente que ocupa esa posicion.
+             * Por tanto hay que tener en cuenta rellenar los coeficientes nulos del polinomio con ceros en el ArrayList.
+            */ 
+            polSolFFT=multiplicacion_FFT_en_Z_41(polA, polB, polA.size()-1, polB.size()-1);
+            if(polSolFFT.get(polSolFFT.size()-1) == 0)
+                  quitar_ceros_en_Z_41(polSolFFT);
+            System.out.print("\nResultado en Z_41 de multiplicacion rapida mediante FFT:\n");
+            mostrar_polinomio_en_Z_41(polSolFFT); 
+        }
     }
 }
 
