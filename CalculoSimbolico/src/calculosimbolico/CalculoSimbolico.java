@@ -648,7 +648,7 @@ public class CalculoSimbolico {
     * @param cij ArrayList<ArrayList<Integer>> o sea matriz con los Cij´s que se van a usar el las operaciones.
     * @param m ArrayList con los Mi´s que se van a usar en las operaciones.
     * @return solucion ArrayList con el resultado de pasar a base normal modular.
-    */
+    *//*
    public static ArrayList<Integer> pasar_base_mod_a_normal(ArrayList<Integer> x, ArrayList<ArrayList<Integer>> cij, ArrayList<Integer> m){
        ArrayList<Integer> y=new ArrayList<>();
        
@@ -695,9 +695,10 @@ public class CalculoSimbolico {
        }
        
        return solucion;
-   }
-   /*
-       public static ArrayList<Integer> pasar_base_mod_a_normal(ArrayList<Integer> x, ArrayList<ArrayList<Integer>> cij, ArrayList<Integer> m){
+   }*/
+   
+   
+  public static ArrayList<Integer> pasar_base_mod_a_normal(ArrayList<Integer> x, ArrayList<ArrayList<Integer>> cij, ArrayList<Integer> m){
        ArrayList<Integer> y=new ArrayList<>();
        
        long aux=0;
@@ -713,6 +714,7 @@ public class CalculoSimbolico {
                    resta_neg=true;
                }
                              System.out.print("\n("+aux+"-"+y.get(j)+")*"+cij.get(j).get(i)+" % "+m.get(i));
+                             /*
                if(resta_neg==true){
                    aux=getUnsignedInt( (int) ((aux-y.get(j))*cij.get(j).get(i))*(-1));
                    aux=aux%m.get(i);
@@ -720,6 +722,17 @@ public class CalculoSimbolico {
                    aux=aux+m.get(i);
                }else{
                    aux=getUnsignedInt( (int) (aux-y.get(j))*cij.get(j).get(i));
+                   aux=aux%m.get(i);
+               }*/
+               if(resta_neg==true){
+                   aux=getUnsignedInt( (int) (((aux-y.get(j))*(-1))%m.get(i) ));
+                   aux=getUnsignedInt((int) aux*cij.get(j).get(i));
+                   aux=aux%m.get(i);
+                   aux=aux*(-1);
+                   aux=aux+m.get(i);
+               }else{
+                   aux=getUnsignedInt( (int) (aux-y.get(j))%m.get(i));
+                   aux=getUnsignedInt((int) aux*cij.get(j).get(i));
                    aux=aux%m.get(i);
                }
                System.out.print(" = "+ aux);
@@ -765,7 +778,6 @@ public class CalculoSimbolico {
        
        return solucion;
    }
-    */
    /**
     * Lee un número desde la entrada estándar
     * @return num número que se ha leido.
