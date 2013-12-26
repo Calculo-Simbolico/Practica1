@@ -4,7 +4,9 @@ package cs_practica_2;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Random;
 
 public class op_En_Z_p {
 
@@ -43,23 +45,58 @@ public class op_En_Z_p {
             return invs;
     }  
    
-    
-    /**
-     * Calcula la raiz n-esima primitiva de la unidad en Zp.
-     * @return la raiz n-esima primitiva de la unidad.
+   /**
+     * Calcula la raiz potDe2-esima primitiva de la unidad en Zp (Cuando se tiene un primo pequeño, 
+     * se pueden localizar las raíces primitivas por “ensayo y error”,construyendo una tabla de potencias).
+     * @param potDe2 numero equivalente a n en la raiz n-esima.
+     * @param p modulo para reducir.
+     * @return la raiz potDe2-esima primitiva de la unidad.
     */
-    public static Integer raiz_n_esima_primitiva_en_Zp(Integer potDe2, Integer p){
-        Integer raiz;
-        Integer generador = 3;//@@@@@@@@@@@@@@@@ESTA PREFIJADO Y SE DEBE CALCULAR@@@@@@@@@@@@@@@@@@
-        Integer p_1=p-1;
+   public static Integer raiz_n_esima_primitiva_en_Zp(Integer potDe2, Integer p){
+        boolean noRepetido=true;
+        boolean noRaiz=true;
+        Integer raiz = 0;
+        int j=1;
+        int i=1;
+
+        for(i=1;i<p && noRaiz;i++){
+            HashSet<Integer> potencias = new HashSet<Integer>();
+            ArrayList<Integer> ArrayPot = new ArrayList<Integer>();
+            noRepetido=true;
+            for(j=1;j<=potDe2 && noRepetido;j++){
+                noRepetido=potencias.add(modulo_en_Zp(p, (int)Math.pow(i, j)));
+                ArrayPot.add(modulo_en_Zp(p, (int)Math.pow(i, j)));
+            }
+            if(noRepetido)
+                System.out.print("noRepetido = "+noRepetido+" i = "+(i-1)+" j = "+(j-1)+" i^j = "+modulo_en_Zp(p, (int)Math.pow((i-1), (j-1)))+"\n");
+           
+            if(noRepetido && modulo_en_Zp(p, ((int)Math.pow(i, (j-1))))==1){
+                noRaiz=false;
+            }
+            System.out.print(i+" --> "+ArrayPot+"\n");
+            
+        }
+        raiz = i-1;
+        return raiz;
+    }
+   
+   
+   /**
+    * Localizar las raices primitivas por ensayo  error (mostrar tabla), pagina 94 TeoriaDeNumeros.pdf
+    * @param p modulo.
+    */
+    public static void mostrar_raices_primitivas_en_Zp(Integer p){
         
-        raiz=modulo_en_Zp(p, (int)Math.pow(generador, (p_1/potDe2)));
-        
-        return raiz;  
+        for(int base=1;base<p;base++){
+            System.out.print("\n"+base+" |");
+            for(int exp=1;exp<p;exp++){
+                System.out.print(" "+modulo_en_Zp(p, (int)Math.pow(base, exp)));
+            }
+       }
     }
     
     
-     /**
+    /**
      * Calcula el modulo de un numero en Zp con p un numero primo impar.
      * @param p modulo.
      * @param num numero del cual se va a calcular el modulo.
@@ -162,6 +199,7 @@ public class op_En_Z_p {
         
         //Calcular el inverso de omega
         Integer invOmega=inverso_en_Zp(p, omega);
+        System.out.print("  --> invOmega="+invOmega);
         //Llamar a 'FFT_en_Zp' pero con el inverso de omega
         polAux=FFT_en_Zp(N, invOmega, polC, p);
         //Multiplicar cada uno de los elementos del polinomio devuelto por 'FFT_en_Zp' por el inverso de 2^N y el nuemo polinomio sera la solucion
@@ -198,11 +236,11 @@ public class op_En_Z_p {
             N++;
         }
         if(((int) Math.pow( 2, N))==(n+m))
-            N++;     System.out.print("\nN="+N);
+            N++;    
 
         //Calcular omega=raiz 2^N-esima primitiva de la unidad
-        omega=raiz_n_esima_primitiva_en_Zp(((int) Math.pow( 2, N)), p);    System.out.print("\nomega="+omega); 
-        
+        omega=raiz_n_esima_primitiva_en_Zp(((int) Math.pow( 2, N)), p);  
+        System.out.print("\n--> N="+N+"  --> omega="+omega);
         //Antes de llamar a 'FFT_en_Zp' hay que añadir ceros al final de polA y polB hasta que tengan un tamaño igual a 2^N
         for(int i=polA.size();i<((int) Math.pow( 2, N));i++)
             polA.add(i,0);
@@ -281,7 +319,9 @@ public class op_En_Z_p {
        
    
     public static void main(String[] args) throws IOException {
-       
+        Random rnd = new Random();
+    	rnd.setSeed(20011974);
+        
         BufferedReader lectura = new BufferedReader(new InputStreamReader(System.in));
         ArrayList<Integer> polA=new ArrayList<Integer>();
         ArrayList<Integer> polB=new ArrayList<Integer>();
@@ -290,6 +330,7 @@ public class op_En_Z_p {
        
         System.out.print("\nINTRODUCE UN NUMERO PRIMO IMPAR p:\n");
         Integer p = Integer.parseInt(lectura.readLine());
+        
         System.out.print("\nINTRODUCE EL PRIMER POLINOMIO DE NUMEROS EN Zp:\n");
         polA=leer_polinomio_en_Zp(p);
         System.out.print("\nINTRODUCE EL SEGUNDO POLINOMIO DE NUMEROS EN Zp:\n");
