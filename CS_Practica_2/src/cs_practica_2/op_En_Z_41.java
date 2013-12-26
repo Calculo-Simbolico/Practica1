@@ -84,8 +84,7 @@ public class op_En_Z_41 {
         
         return raiz;  
     }
-    
-    
+        
      /**
      * Calcula el modulo de un numero en Z_41.
      * @param num numero del cual se va a calcular el modulo.
@@ -95,8 +94,7 @@ public class op_En_Z_41 {
         Integer p=41;
         Integer modulo = 0;
         
-        modulo=num%p;
-        
+        modulo=num%p;        
         if(modulo<0)
             return p+modulo;
         else 
@@ -307,7 +305,7 @@ public class op_En_Z_41 {
         ArrayList<Integer> polSolEsc=new ArrayList<Integer>();
         ArrayList<Integer> polSolFFT=new ArrayList<Integer>();    
         Random rnd = new Random();
-    	rnd.setSeed(2014);
+    	rnd.setSeed(333333);
         /*
         System.out.print("\nINTRODUCE EL PRIMER POLINOMIO DE NUMEROS EN Z_41:\n");
         polA=leer_polinomio_en_Z_41();
@@ -327,7 +325,7 @@ public class op_En_Z_41 {
                 polA.add(j, modulo_en_Z_41(rnd.nextInt()));
                 
                 if(j!=4)
-                    polB.add(j, modulo_en_Z_41(rnd.nextInt()));
+                polB.add(j, modulo_en_Z_41(rnd.nextInt()));
             }
             System.out.print("\n\npolA="+polA+"      Grado de polA="+(polA.size()-1));
             System.out.print("\npolB="+polB+"        Grado de polB="+(polB.size()-1));
