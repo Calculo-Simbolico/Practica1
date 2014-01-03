@@ -379,7 +379,7 @@ public class op_En_Complejos {
         System.out.print("\nINTRODUCE EL SEGUNDO POLINOMIO DE COMPLEJOS:\n");
         polB=leer_polinomio_en_C(); 
         **/
-        for(int grad=1;grad<=1001;grad++){ 
+        for(int grad=1;grad<=101;grad++){ 
             ArrayList<ArrayList<Double>> polA=new ArrayList<ArrayList<Double>>();
             ArrayList<ArrayList<Double>> polB=new ArrayList<ArrayList<Double>>();
             ArrayList<ArrayList<Double>> polSolEsc_Doub=new ArrayList<ArrayList<Double>>();
@@ -409,7 +409,7 @@ public class op_En_Complejos {
                 aux.add(1, polSolEsc_Doub.get(i).get(1).intValue());
                 polSolEsc_Int.add(i, aux);
             }
-            System.out.print("\n--> Resultado en C de multiplicacion ESCUELA:\n"+polSolEsc_Int+"\n");
+            System.out.print("\n--> Resultado en C de multiplicacion ESCUELA:\n"+polSolEsc_Int);
             /*
             El grado de cada polinomio (n y m) es el tamaño del polinomio menos uno, ya que el indice de cada ArrayList 
             nos indica el exponente al que esta elevado el coeficiente que ocupa esa posicion.

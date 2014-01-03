@@ -75,17 +75,14 @@ public class op_En_Z_257 {
      */
     public static Integer raiz_n_esima_primitiva_en_Z_257(Integer N){
         Integer raiz=0;
-<<<<<<< HEAD
-
+        
         boolean salte=false;
         for(int i=2;i<257 && salte==false;i++){
             if(Math.pow(i, Math.pow(2,N))%257 == 1){
                 raiz=i;
                 salte=true;
             }
-        }
-=======
-        
+        }     
         if(N==1)
             raiz=256;
         else if(N==2)
@@ -101,9 +98,7 @@ public class op_En_Z_257 {
         else if(N==7)
             System.out.print("No existe en Z_257 ninguna raiz de orden="+N+".\n");
         else if(N==8)
-            System.out.print("No existe en Z_257 ninguna raiz de orden="+N+".\n");
->>>>>>> 7fe3f0d1ea26c892395c245b0c67bb420429468f
-        
+            System.out.print("No existe en Z_257 ninguna raiz de orden="+N+".\n");     
         return raiz;  
     }
     
@@ -247,13 +242,8 @@ public class op_En_Z_257 {
             N++;   
 
         //Calcular omega=raiz 2^N-esima primitiva de la unidad
-<<<<<<< HEAD
-        omega=raiz_n_esima_primitiva_en_Z_257(N);
-        
-=======
         omega=raiz_n_esima_primitiva_en_Z_257(N);    
         System.out.print("--> N="+N+"  --> omega="+omega);
->>>>>>> 7fe3f0d1ea26c892395c245b0c67bb420429468f
         //Antes de llamar a 'FFT_en__Z_257' hay que añadir ceros al final de polA y polB hasta que tengan un tamaño igual a 2^N
         for(int i=polA.size();i<((int) Math.pow( 2, N));i++)
             polA.add(i,0);
@@ -333,13 +323,8 @@ public class op_En_Z_257 {
 
    public static void main(String[] args){    
         Random rnd = new Random();
-<<<<<<< HEAD
-        rnd.setSeed(9999999);
-        /*
-=======
     	rnd.setSeed(20011974);
         /**
->>>>>>> 7fe3f0d1ea26c892395c245b0c67bb420429468f
         System.out.print("\nINTRODUCE EL PRIMER POLINOMIO DE NUMEROS EN Z_257:\n");
         polA=leer_polinomio_en_Z_257();
         
@@ -350,17 +335,8 @@ public class op_En_Z_257 {
                 System.out.print("\nNo existe en Z_257 una raiz de orden mayor a 8, la suma de los grados de los dos polinomios debe ser menor que 8.\n");
                 return;
         }
-<<<<<<< HEAD
-        */
-        for(int i=1;i<=5;i++){ 
-=======
         **/
-<<<<<<< HEAD
-        for(int grad=1;grad<=8;grad++){ 
-=======
         for(int grad=1;grad<=128;grad++){ 
->>>>>>> 7fe3f0d1ea26c892395c245b0c67bb420429468f
->>>>>>> e43506a6d4953366b5f495ca85ada0bfd3207baf
             ArrayList<Integer> polA=new ArrayList<Integer>();
             ArrayList<Integer> polB=new ArrayList<Integer>();
             ArrayList<Integer> polSolEsc=new ArrayList<Integer>();
@@ -377,11 +353,7 @@ public class op_En_Z_257 {
             polSolEsc=multiplicacion_escuela_en_Z_257(polA, polB);
             if(polSolEsc.get(polSolEsc.size()-1) == 0)
                   quitar_ceros_en_Z_257(polSolEsc);
-<<<<<<< HEAD
-            System.out.print("\nResultado en Z_257 de multiplicacion ESCUELA:\n");
-=======
             System.out.print("\n--> Resultado en Z_257 de multiplicacion ESCUELA:\n");
->>>>>>> 7fe3f0d1ea26c892395c245b0c67bb420429468f
             mostrar_polinomio_en_Z_257(polSolEsc);
 
             /*El grado de cada polinomio (n y m) es el tamaño del polinomio menos uno, ya que el indice de cada ArrayList 
@@ -391,11 +363,7 @@ public class op_En_Z_257 {
             polSolFFT=multiplicacion_FFT_en_Z_257(polA, polB, polA.size()-1, polB.size()-1);
             if(polSolFFT.get(polSolFFT.size()-1) == 0)
                   quitar_ceros_en_Z_257(polSolFFT);
-<<<<<<< HEAD
-            System.out.print("\nResultado en Z_257 de multiplicacion rapida mediante FFT:\n");
-=======
             System.out.print("\n--> Resultado en Z_257 de multiplicacion rapida mediante FFT:\n");
->>>>>>> 7fe3f0d1ea26c892395c245b0c67bb420429468f
             mostrar_polinomio_en_Z_257(polSolFFT); 
             System.out.print("\n");
         }
