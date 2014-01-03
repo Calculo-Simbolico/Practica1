@@ -50,34 +50,44 @@ public class op_En_Z_p {
      * se pueden localizar las raíces primitivas por “ensayo y error”,construyendo una tabla de potencias).
      * @param potDe2 numero equivalente a n en la raiz n-esima.
      * @param p modulo para reducir.
-     * @return la raiz potDe2-esima primitiva de la unidad.
+     * @return la raiz potDe2-esima primitiva de la unidad si existe la raiz o devuelve -1 si no existe la raiz.
     */
    public static Integer raiz_n_esima_primitiva_en_Zp(Integer potDe2, Integer p){
+        ArrayList<Integer> ArrayPot=new ArrayList<Integer>(); 
+        HashSet<Integer> potencias=new HashSet<Integer>();
         boolean noRepetido=true;
         boolean noRaiz=true;
-        Integer raiz = 0;
+        Integer raiz=0;
         int j=1;
         int i=1;
-
+        
         for(i=1;i<p && noRaiz;i++){
-            HashSet<Integer> potencias = new HashSet<Integer>();
-            ArrayList<Integer> ArrayPot = new ArrayList<Integer>();
+            potencias=new HashSet<Integer>();
+            ArrayPot=new ArrayList<Integer>();
             noRepetido=true;
             for(j=1;j<=potDe2 && noRepetido;j++){
+                //Se usa un HashSet para que no haya ninguna potencia repetida
                 noRepetido=potencias.add(modulo_en_Zp(p, (int)Math.pow(i, j)));
+                //Para visuaizar resultados
                 ArrayPot.add(modulo_en_Zp(p, (int)Math.pow(i, j)));
             }
-            if(noRepetido)
-                System.out.print("noRepetido = "+noRepetido+" i = "+(i-1)+" j = "+(j-1)+" i^j = "+modulo_en_Zp(p, (int)Math.pow((i-1), (j-1)))+"\n");
-           
+            //Si ninguna potencia se ha repetido y ademas la potencia n-esima de i es igual a 1 se sale del bucle
             if(noRepetido && modulo_en_Zp(p, ((int)Math.pow(i, (j-1))))==1){
                 noRaiz=false;
             }
-            System.out.print(i+" --> "+ArrayPot+"\n");
-            
+            //Para visuaizar resultados
+            //System.out.print(i+" --> "+ArrayPot+"\n");      
         }
-        raiz = i-1;
-        return raiz;
+        if(noRaiz){
+            System.out.print("\n¡¡¡No existe en Z_"+p+" una raiz de orden "+potDe2+"!!!.\n");
+                return -1;
+        }
+        else{
+            //Para visuaizar resultados
+            System.out.print((i-1)+" --> "+ArrayPot+"\n"); 
+            raiz = i-1;
+            return raiz;
+        }
     }
    
    
@@ -239,7 +249,10 @@ public class op_En_Z_p {
             N++;    
 
         //Calcular omega=raiz 2^N-esima primitiva de la unidad
-        omega=raiz_n_esima_primitiva_en_Zp(((int) Math.pow( 2, N)), p);  
+        omega=raiz_n_esima_primitiva_en_Zp(((int) Math.pow( 2, N)), p);
+        //Salir si no existe la raiz o sea omega=-1
+        if(omega==-1)
+            return polSol;
         System.out.print("\n--> N="+N+"  --> omega="+omega);
         //Antes de llamar a 'FFT_en_Zp' hay que añadir ceros al final de polA y polB hasta que tengan un tamaño igual a 2^N
         for(int i=polA.size();i<((int) Math.pow( 2, N));i++)
@@ -279,7 +292,7 @@ public class op_En_Z_p {
         for(int i=0;i<pol.size();i++)
             System.out.print(pol.get(i)+" ");
        
-        System.out.print("]\n");
+        System.out.print("]\n\n");
    }
     
     
@@ -333,6 +346,7 @@ public class op_En_Z_p {
         
         System.out.print("\nINTRODUCE EL PRIMER POLINOMIO DE NUMEROS EN Zp:\n");
         polA=leer_polinomio_en_Zp(p);
+        
         System.out.print("\nINTRODUCE EL SEGUNDO POLINOMIO DE NUMEROS EN Zp:\n");
         polB=leer_polinomio_en_Zp(p);
         
@@ -340,6 +354,8 @@ public class op_En_Z_p {
         System.out.print("\nGrado de polB="+(polB.size()-1));
        
         polSolEsc=multiplicacion_escuela_en_Zp(polA, polB, p);
+        if(polSolEsc.get(polSolEsc.size()-1) == 0)
+                  quitar_ceros_en_Zp(polSolEsc);
         System.out.print("\nResultado en Zp de multiplicacion ESCUELA:\n");
         mostrar_polinomio_en_Zp(polSolEsc);
         
@@ -348,7 +364,8 @@ public class op_En_Z_p {
          * Por tanto hay que tener en cuenta rellenar los coeficientes nulos del polinomio con ceros en el ArrayList.
         */ 
         polSolFFT=multiplicacion_FFT_en_Zp(polA, polB, polA.size()-1, polB.size()-1, p);
-        quitar_ceros_en_Zp(polSolFFT);
+        if(!polSolFFT.isEmpty() && polSolFFT.get(polSolFFT.size()-1) == 0)
+                  quitar_ceros_en_Zp(polSolFFT);
         System.out.print("\nResultado en Zp de multiplicacion rapida mediante FFT:\n");
         mostrar_polinomio_en_Zp(polSolFFT);
         

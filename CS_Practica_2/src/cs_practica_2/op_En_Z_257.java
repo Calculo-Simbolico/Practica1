@@ -81,9 +81,8 @@ public class op_En_Z_257 {
             raiz=16;
         else if(N==3)
             raiz=4;
-        
         else if(N==4)
-            raiz=2;     //¿Deberia ser raiz?
+            raiz=2;     
         else if(N==5)
             System.out.print("No existe en Z_257 ninguna raiz de orden="+N+".\n");
         else if(N==6)
@@ -329,7 +328,7 @@ public class op_En_Z_257 {
                 return;
         }
         **/
-        for(int grad=1;grad<=128;grad++){ 
+        for(int grad=1;grad<=8;grad++){ 
             ArrayList<Integer> polA=new ArrayList<Integer>();
             ArrayList<Integer> polB=new ArrayList<Integer>();
             ArrayList<Integer> polSolEsc=new ArrayList<Integer>();
