@@ -305,8 +305,13 @@ public class op_En_Z_41 {
         ArrayList<Integer> polSolEsc=new ArrayList<Integer>();
         ArrayList<Integer> polSolFFT=new ArrayList<Integer>();    
         Random rnd = new Random();
+<<<<<<< HEAD
     	rnd.setSeed(333333);
         /*
+=======
+    	rnd.setSeed(20011974);
+        /**
+>>>>>>> 803eacbbe4f05b07dabb682922456e98f607191d
         System.out.print("\nINTRODUCE EL PRIMER POLINOMIO DE NUMEROS EN Z_41:\n");
         polA=leer_polinomio_en_Z_41();
         System.out.print("\nINTRODUCE EL SEGUNDO POLINOMIO DE NUMEROS EN Z_41:\n");
@@ -323,12 +328,20 @@ public class op_En_Z_41 {
             
             for(int j=0;j<i;j++){
                 polA.add(j, modulo_en_Z_41(rnd.nextInt()));
+<<<<<<< HEAD
                 
                 if(j!=4)
                 polB.add(j, modulo_en_Z_41(rnd.nextInt()));
             }
             System.out.print("\n\npolA="+polA+"      Grado de polA="+(polA.size()-1));
             System.out.print("\npolB="+polB+"        Grado de polB="+(polB.size()-1));
+=======
+             
+            for(int j=0;j<grad;j++)
+                polB.add(j, modulo_en_Z_41(rnd.nextInt()));
+            
+            System.out.print("\n--> Grado de polA="+(polA.size()-1)+"  --> Grado de polB="+(polB.size()-1));
+>>>>>>> 803eacbbe4f05b07dabb682922456e98f607191d
 
             polSolEsc=multiplicacion_escuela_en_Z_41(polA, polB);
             if(polSolEsc.get(polSolEsc.size()-1) == 0)
