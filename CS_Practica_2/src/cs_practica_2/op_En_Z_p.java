@@ -53,7 +53,7 @@ public class op_En_Z_p {
      * @return la raiz potDe2-esima primitiva de la unidad.
     */
    public static Integer raiz_n_esima_primitiva_en_Zp(Integer potDe2, Integer p){
-        boolean noRepetido=true;
+    /*    boolean noRepetido=true;
         boolean noRaiz=true;
         Integer raiz = 0;
         int j=1;
@@ -76,7 +76,18 @@ public class op_En_Z_p {
             System.out.print(i+" --> "+ArrayPot+"\n");
             
         }
-        raiz = i-1;
+        raiz = i-1;*/
+        
+        Integer raiz=0;
+
+        boolean salte=false;
+        for(int i=2;i<p && salte==false;i++){
+            if(Math.pow(i, potDe2)%p == 1){
+                raiz=i;
+                salte=true;
+            }
+        }
+        
         return raiz;
     }
    
@@ -175,8 +186,11 @@ public class op_En_Z_p {
             C=FFT_en_Zp(N-1, modulo_en_Zp(p, (int)Math.pow(omega, 2)), polC, p);
 
             for(int i=0;i<((int)Math.pow(2, N-1));i++){
+                A.set(i, (int)(B.get(i)+( (Math.pow(omega, i)* C.get(i))%p))%p);
+                A.set(((int)Math.pow(2, N-1))+i, (int)(B.get(i)-( (Math.pow(omega, i)* C.get(i))%p))%p);
+                /*
                 A.set(i, modulo_en_Zp(p, B.get(i)+((int)Math.pow(omega, i)* C.get(i))));
-                A.set(((int)Math.pow(2, N-1))+i, modulo_en_Zp(p, B.get(i)-((int)Math.pow(omega, i)* C.get(i))));
+                A.set(((int)Math.pow(2, N-1))+i, modulo_en_Zp(p, B.get(i)-((int)Math.pow(omega, i)* C.get(i))));*/
             }
         }
         return A;
