@@ -366,8 +366,21 @@ public class op_En_Complejos {
                 i++;
         }
         return pol;
-   }  
-    
+   } 
+   
+   public static int leer_numero(){
+                InputStreamReader isr = new InputStreamReader(System.in);
+                BufferedReader br = new BufferedReader (isr); 
+                String input=new String();
+                int num;
+        try{
+            input = br.readLine();
+        }catch(java.io.IOException e){
+            System.out.print("\nExcepcion ocurrida "+e.getMessage());     
+        }
+        num=Integer.parseInt(input);
+        return num;
+   }     
 
     public static void main(String[] args) throws IOException {
         Random rnd = new Random();
