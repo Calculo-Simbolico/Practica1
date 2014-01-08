@@ -79,7 +79,50 @@ public class op_En_Z_p {
             raiz=-1;
         return raiz;
     }
-   
+   public static Integer raiz_n_esima_primitiva_en_Zp_v2(Integer potDe2, Integer p){
+        int raiz=0;
+
+        if((p-1)%potDe2!=0)
+            return -1;
+        
+        //busco los factores primos de p-1
+        ArrayList<Integer> factores_primos=new ArrayList<Integer>();
+        int p_aux=p-1;
+        int primo=2;
+        while(p_aux!=1){
+            if(p_aux%primo==0){
+                boolean esta_ya=false;
+                for(int j=0;j<factores_primos.size();j++){
+                    if(factores_primos.get(j)==primo)
+                        esta_ya=true;
+                }
+                if(esta_ya==false)
+                    factores_primos.add(primo);
+                p_aux=p_aux/primo;
+            }else{
+                primo++;
+            }
+        }
+        //System.out.print("\nFactores primos "+factores_primos);
+        //busco el generador
+        int generador=1;
+        boolean salte=false;
+        for(int i=2;i<p && salte==false;i++){
+            salte=true;
+            for(int j=0;j<factores_primos.size() && salte==true;j++){
+                if(potencia_modulo_p(i,((p-1)/factores_primos.get(j)),p) == 1){
+                    salte=false;
+                }
+            }
+            generador=i;
+        }
+        //System.out.print("\nGenerador "+generador);
+        //calculo la raiz
+        raiz=potencia_modulo_p(generador, (p-1)/potDe2,p);
+        //System.out.print("\nRaiz "+raiz);
+        
+        return raiz;
+    }   
    
    /**
     * Localizar las raices primitivas por ensayo  error (mostrar tabla), pagina 94 TeoriaDeNumeros.pdf
@@ -269,7 +312,8 @@ public class op_En_Z_p {
         if(((int) Math.pow( 2, N))==(n+m))
             N++;    
         //Calcular omega=raiz 2^N-esima primitiva de la unidad
-        omega=raiz_n_esima_primitiva_en_Zp(((int) Math.pow( 2, N)), p);
+        omega=raiz_n_esima_primitiva_en_Zp_v2(((int) Math.pow( 2, N)), p);
+        //System.out.print("\nomega="+omega+" N="+N+" n="+Math.pow( 2, N));
         //Antes de llamar a 'FFT_en_Zp' hay que aÃ±adir ceros al final de polA y polB hasta que tengan un tamaÃ±o igual a 2^N
         for(int i=polA.size();i<((int) Math.pow( 2, N));i++)
             polA.add(i,0);
@@ -374,7 +418,7 @@ public class op_En_Z_p {
         if(((int) Math.pow( 2, N))==grado)
             N++;    
         int omega;
-        omega=raiz_n_esima_primitiva_en_Zp(((int) Math.pow( 2, N)), p);
+        omega=raiz_n_esima_primitiva_en_Zp_v2(((int) Math.pow( 2, N)), p);
         if(omega==-1)
             existe=false;
        

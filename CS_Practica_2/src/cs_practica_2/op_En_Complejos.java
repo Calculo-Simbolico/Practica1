@@ -301,7 +301,6 @@ public class op_En_Complejos {
      * @param pol el polinomio que se va a modificar.
      */
     public static void quitar_ceros_en_C(ArrayList<ArrayList<Double>> pol){
-        System.out.print("\nquita ceros");
         for(int i=pol.size()-1;pol.get(i).get(0).intValue()==0 && pol.get(i).get(1).intValue()==0 && i>0;i--)
             pol.remove(i);
    }
