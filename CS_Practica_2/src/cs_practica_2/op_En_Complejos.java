@@ -195,14 +195,13 @@ public class op_En_Complejos {
                     complejo3.add(1, polA.get(i).get(1));
                     polC.add(complejo3);
                 }
-            }                                                                                                                                                                           
+            }                                                                    
+            
             B=FFT_en_C(N-1, potencia_en_C(omega, 2), polB);                                                                                                         
-            C=FFT_en_C(N-1, potencia_en_C(omega, 2), polC);
-                                                                                                                   
+            C=FFT_en_C(N-1, potencia_en_C(omega, 2), polC);  
             for(int i=0;i<((int)Math.pow(2, N-1));i++){
                 ArrayList<Double>complejo4=new ArrayList<>();
                 ArrayList<Double>complejo5=new ArrayList<>();
-                
                 complejo4.add(0, sum_en_C(B.get(i), mult_en_C(potencia_en_C(omega, i), C.get(i))).get(0));
                 complejo4.add(1, sum_en_C(B.get(i), mult_en_C(potencia_en_C(omega, i), C.get(i))).get(1));
                 A.set(i, complejo4);
@@ -211,7 +210,7 @@ public class op_En_Complejos {
                 complejo5.add(1, rest_en_C(B.get(i), mult_en_C(potencia_en_C(omega, i), C.get(i))).get(1));
                 A.set(((int)Math.pow(2, N-1))+i, complejo5);
             }
-        }                                                                                                           
+        }          
         return A;
     }
     
@@ -233,11 +232,10 @@ public class op_En_Complejos {
         //Calcular el inverso de omega, se hace cambiando el signo de la parte imaginaria
         invOmega.add(0, Math.cos((2*Math.PI)/Math.pow( 2, N)));
         invOmega.add(1, -1*(Math.sin((2*Math.PI)/Math.pow( 2, N))));  
-        System.out.print("  --> invOmega=["+invOmega.get(0)+", "+invOmega.get(1)+"].");  
         //Llamar a 'FFT_en_C' pero con el inverso de omega
         polAux=FFT_en_C(N, invOmega, polC);      
         //Multiplicar cada uno de los elementos del polinomio devuelto por 'FFT_en_C' por el inverso de 2^N y el nuemo polinomio sera la solucion
-        Double invPotDe2=inverso(((int) Math.pow( 2, N)));       
+        Double invPotDe2=inverso(((int) Math.pow( 2, N)));  
         for(int i=0;i<polAux.size();i++){
             ArrayList<Double>complejo=new ArrayList<>();
             complejo.add(0, polAux.get(i).get(0));
@@ -279,8 +277,7 @@ public class op_En_Complejos {
         
         //Calcular omega=raiz 2^N-esima primitiva de la unidad (PI=180)
         omega.add(0, Math.cos((2*Math.PI)/Math.pow(2, N)));
-        omega.add(1, Math.sin((2*Math.PI)/Math.pow(2, N)));     
-        System.out.print("--> N="+N+"  --> omega=["+omega.get(0)+", "+omega.get(1)+"]");                                                                                                
+        omega.add(1, Math.sin((2*Math.PI)/Math.pow(2, N)));                                                                                                  
         //Antes de llamar a 'FFT_en_C' hay que añadir ceros al final de polA y polB hasta que tengan un tamaño igual a 2^N
         for(int i=polA.size();i<(int) Math.pow( 2, N);i++)
             polA.add(i,cmpljCero);
@@ -304,7 +301,8 @@ public class op_En_Complejos {
      * @param pol el polinomio que se va a modificar.
      */
     public static void quitar_ceros_en_C(ArrayList<ArrayList<Double>> pol){
-        for(int i=pol.size()-1;pol.get(i).get(0)==0.0 && pol.get(i).get(1)==0.0 && i>0;i--)
+        System.out.print("\nquita ceros");
+        for(int i=pol.size()-1;pol.get(i).get(0).intValue()==0 && pol.get(i).get(1).intValue()==0 && i>0;i--)
             pol.remove(i);
    }
     
@@ -366,8 +364,30 @@ public class op_En_Complejos {
                 i++;
         }
         return pol;
-   } 
-   
+   }
+   public static void mostrar_polinomio(ArrayList<ArrayList<Double>> polA){
+        for(int i=polA.size()-1;i>=0;i--){
+            if(i!=0){
+                System.out.print("("+polA.get(i).get(0).intValue()+"+"+polA.get(i).get(1).intValue() +"i)x^"+i+" + ");
+            }else{
+                System.out.print("("+polA.get(i).get(0).intValue()+"+"+polA.get(i).get(1).intValue() +"i)");
+            }
+        }
+       
+   }
+   public static boolean son_iguales(ArrayList<ArrayList<Double>> polA, ArrayList<ArrayList<Double>> polB){
+       boolean iguales=true;
+       if(polA.size()!=polB.size()){
+           iguales=false;
+       }else{
+           for(int i=0;i<polA.size();i++){//|| (int) polA.get(i).get(1)!= (int) polB.get(i).get(1)
+               if( polA.get(i).get(0).intValue()!= polB.get(i).get(0).intValue() ||  polA.get(i).get(1).intValue()!= polB.get(i).get(1).intValue()){
+                   iguales=false;
+               }
+           }
+       }              
+       return iguales;
+   }
    public static int leer_numero(){
                 InputStreamReader isr = new InputStreamReader(System.in);
                 BufferedReader br = new BufferedReader (isr); 
@@ -383,15 +403,15 @@ public class op_En_Complejos {
    }     
 
     public static void main(String[] args) throws IOException {
-        Random rnd = new Random();
-    	rnd.setSeed(20011974);
+        //Random rnd = new Random();
+    	//rnd.setSeed(20011974);
         /**
         System.out.print("\nINTRODUCE EL PRIMER POLINOMIO DE COMPLEJOS:\n");
         polA=leer_polinomio_en_C();
         
         System.out.print("\nINTRODUCE EL SEGUNDO POLINOMIO DE COMPLEJOS:\n");
         polB=leer_polinomio_en_C(); 
-        **/
+        **//*
         for(int grad=1;grad<=101;grad++){ 
             ArrayList<ArrayList<Double>> polA=new ArrayList<ArrayList<Double>>();
             ArrayList<ArrayList<Double>> polB=new ArrayList<ArrayList<Double>>();
@@ -427,7 +447,7 @@ public class op_En_Complejos {
             El grado de cada polinomio (n y m) es el tamaño del polinomio menos uno, ya que el indice de cada ArrayList 
             nos indica el exponente al que esta elevado el coeficiente que ocupa esa posicion.
             Por tanto hay que tener en cuenta rellenar los coeficientes nulos del polinomio con ceros en el ArrayList.
-            */
+            *//*
             polSolFFT_Doub=multiplicacion_FFT_en_C(polA, polB, polA.size()-1, polB.size()-1);
             //Hacer casting a entero 
             for(int i=0;i<polSolEsc_Doub.size();i++){
@@ -438,5 +458,126 @@ public class op_En_Complejos {
             }
             System.out.print("\n--> Resultado en C de multiplicacion rapida mediante FFT:\n"+polSolFFT_Int+"\n");
         }
+        */
+        int salir=1;
+        while(salir==1){
+            ArrayList<ArrayList<Double>> polA=new ArrayList<ArrayList<Double>>();
+            ArrayList<ArrayList<Double>> polB=new ArrayList<ArrayList<Double>>();
+ 
+            Random rnd = new Random();
+            int intro_datos=0;
+            while(intro_datos!=1 && intro_datos!=2){
+                System.out.print("\nDesea introducir los polinomios:  \n    1. A mano \n    2. Aleatoriamente\n");
+                intro_datos=leer_numero();
+                if(intro_datos!=1 && intro_datos!=2){
+                    System.out.print("\nError: diga un numero entre 1 y 2.");
+                }
+            }
+            if(intro_datos==1){
+                System.out.print("\n    OJO: Los coeficientes se introducen de menor a mayor.");
+                System.out.print("\n         Los coeficientes nulos se introduciran como 0.");        
+                System.out.print("\n         Los coeficientes se introducen como (x,y) siendo x la parte real e y la parte imaginaria."); 
+                System.out.print("\n         Ejemplo: (3,4) (8,2) es (3+4i)+(8+2i)x.");                     
+                System.out.print("\nINTRODUCE EL PRIMER POLINOMIO DE NUMEROS EN C:\n");
+                polA=leer_polinomio_en_C();
+                System.out.print("\nINTRODUCE EL SEGUNDO POLINOMIO DE NUMEROS EN C:\n");
+                polB=leer_polinomio_en_C(); 
+
+            }else if(intro_datos==2){
+                System.out.print("\nCuantos digitos quiere que tenga el primer polinomio:\n");
+                int num_dig=leer_numero();        
+                System.out.print("\nCuantos digitos quiere que tenga el segundo polinomio:\n");
+                int num_dig2=leer_numero();
+                System.out.print("\nDiga una semilla para generar el numero aleatorio:\n");
+                int semilla=leer_numero();         
+                rnd.setSeed(semilla);
+                for(int i=0;i<num_dig;i++){
+                    ArrayList<Double>complejo1=new ArrayList<>();
+                    Double aux1;
+                    aux1=rnd.nextDouble()*1000;
+                    complejo1.add(0, (double)aux1.intValue());
+                    aux1=rnd.nextDouble()*1000;                    
+                    complejo1.add(1, (double)aux1.intValue());
+                    polA.add(i, complejo1);
+                }
+                for(int i=0;i<num_dig2;i++){
+                    ArrayList<Double>complejo1=new ArrayList<>();
+                    Double aux1;
+                    aux1=rnd.nextDouble()*1000;
+                    complejo1.add(0, (double)aux1.intValue());
+                    aux1=rnd.nextDouble()*1000;                    
+                    complejo1.add(1, (double)aux1.intValue());
+                    polB.add(i, complejo1);
+                }               
+            }
+            System.out.print("\nPrimer polinomio generado aleatoriamente:  ");
+            mostrar_polinomio(polA);
+            System.out.print("\nSegundo polinomio generado aleatoriamente: ");
+            mostrar_polinomio(polB);
+            int mult_usada=0;
+            while(mult_usada!=1 && mult_usada!=2 && mult_usada!=3){
+                System.out.print("\n\nDiga que multiplicacion quiere usar: \n   1.Escuela\n   2.Multiplicacion mediante FFT\n   3.Las dos anteriores para comparar los tiempos\n");
+                mult_usada=leer_numero();      
+                if(mult_usada!=1 && mult_usada!=2 && mult_usada!=3){
+                    System.out.print("\nError: diga un numero entre 1 y 3.");
+                }
+            }
+                if(mult_usada==1){               
+                    ArrayList<ArrayList<Double>> polSol=new ArrayList<ArrayList<Double>>();                 
+                    long time1=System.currentTimeMillis();
+                    polSol=multiplicacion_escuela_en_C(polA, polB);
+                    long time2=System.currentTimeMillis();
+                    if(polSol.get(polSol.size()-1).get(0).intValue() == 0 && polSol.get(polSol.size()-1).get(1).intValue() == 0)
+                          quitar_ceros_en_C(polSol);                    
+                    System.out.print("\nResultado en C de multiplicacion ESCUELA:\n    ");        
+                    mostrar_polinomio(polSol);
+                    long tiempo=time2-time1;
+                    System.out.print("\n    Tiempo empleado en la multiplicacion escuela:   "+tiempo+" ms");
+                }else if(mult_usada==2){
+                    ArrayList<ArrayList<Double>> polSol2=new ArrayList<ArrayList<Double>>();       
+                    long tiempo;
+                    long time1=System.currentTimeMillis();
+                    polSol2=multiplicacion_FFT_en_C(polA, polB, polA.size()-1, polB.size()-1);
+                    long time2=System.currentTimeMillis();
+                     tiempo=time2-time1;
+                    
+                    if(polSol2.get(polSol2.size()-1).get(0).intValue() == 0 && polSol2.get(polSol2.size()-1).get(1).intValue() == 0)
+                          quitar_ceros_en_C(polSol2);  
+                    System.out.print("\nResultado en C de multiplicacion mediante FFT:\n   ");        
+                    mostrar_polinomio(polSol2);
+                    System.out.print("\n    Tiempo empleado en la multiplicacion mediante FFT:   "+tiempo+" ms");
+                }else if(mult_usada==3){
+                    ArrayList<ArrayList<Double>> polSol=new ArrayList<ArrayList<Double>>();                 
+                    long time1=System.currentTimeMillis();
+                    polSol=multiplicacion_escuela_en_C(polA, polB);
+                    long time2=System.currentTimeMillis();
+                    if(polSol.get(polSol.size()-1).get(0).intValue() == 0 && polSol.get(polSol.size()-1).get(1).intValue() == 0)
+                          quitar_ceros_en_C(polSol);                    
+                    System.out.print("\nResultado en C de multiplicacion ESCUELA:\n    ");        
+                    mostrar_polinomio(polSol);
+                    long tiempo=time2-time1;
+                    System.out.print("\n    Tiempo empleado en la multiplicacion escuela:   "+tiempo+" ms");
+                    ArrayList<ArrayList<Double>> polSol2=new ArrayList<ArrayList<Double>>();       
+                     time1=System.currentTimeMillis();
+                    polSol2=multiplicacion_FFT_en_C(polA, polB, polA.size()-1, polB.size()-1);
+                     time2=System.currentTimeMillis();
+                     tiempo=time2-time1;
+                    
+                    if(polSol2.get(polSol2.size()-1).get(0).intValue() == 0 && polSol2.get(polSol2.size()-1).get(1).intValue() == 0)
+                          quitar_ceros_en_C(polSol2);  
+                    System.out.print("\nResultado en C de multiplicacion mediante FFT:\n   ");        
+                    mostrar_polinomio(polSol2);
+                    System.out.print("\n    Tiempo empleado en la multiplicacion mediante FFT:   "+tiempo+" ms");                    
+                }                
+            
+            salir=0;
+            while(salir!=1 && salir!=2){
+                System.out.print("\n\n¿Desea hacer mas multiplicaciones de polinomios en C?\n   1. Si\n   2. No\n");
+                salir=leer_numero();      
+                if(salir!=1 && salir!=2){
+                    System.out.print("\nError: diga un numero entre 1 y 2.");
+                }
+            }                     
+        }        
     }
 }
