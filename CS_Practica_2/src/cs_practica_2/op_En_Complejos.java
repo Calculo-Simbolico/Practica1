@@ -367,9 +367,39 @@ public class op_En_Complejos {
    public static void mostrar_polinomio(ArrayList<ArrayList<Double>> polA){
         for(int i=polA.size()-1;i>=0;i--){
             if(i!=0){
-                System.out.print("("+polA.get(i).get(0).intValue()+"+"+polA.get(i).get(1).intValue() +"i)x^"+i+" + ");
+                //System.out.print("("+polA.get(i).get(0)+"+"+polA.get(i).get(1) +"i)x^"+i+" + ");
+                System.out.print("(");
+                if(polA.get(i).get(0).intValue()+0.5 < polA.get(i).get(0) && polA.get(i).get(0)>0)
+                    System.out.print(polA.get(i).get(0).intValue()+1);
+                else if(polA.get(i).get(0).intValue()-0.5 > polA.get(i).get(0) && polA.get(i).get(0)<0)
+                    System.out.print(polA.get(i).get(0).intValue()-1);
+                else
+                    System.out.print(polA.get(i).get(0).intValue());
+                System.out.print("+");
+                if(polA.get(i).get(1).intValue()+0.5 < polA.get(i).get(1) && polA.get(i).get(1)>0)
+                    System.out.print(polA.get(i).get(1).intValue()+1);
+                else if(polA.get(i).get(1).intValue()-0.5 > polA.get(i).get(1) && polA.get(i).get(1)<0)
+                    System.out.print(polA.get(i).get(1).intValue()-1);
+                else
+                    System.out.print(polA.get(i).get(1).intValue());           
+                System.out.print("i)x^"+i+" + ");
             }else{
-                System.out.print("("+polA.get(i).get(0).intValue()+"+"+polA.get(i).get(1).intValue() +"i)");
+                //System.out.print("("+polA.get(i).get(0).intValue()+"+"+polA.get(i).get(1).intValue() +"i)");
+                System.out.print("(");
+                if(polA.get(i).get(0).intValue()+0.5 < polA.get(i).get(0) && polA.get(i).get(0)>0)
+                    System.out.print(polA.get(i).get(0).intValue()+1);
+                else if(polA.get(i).get(0).intValue()-0.5 > polA.get(i).get(0) && polA.get(i).get(0)<0)
+                    System.out.print(polA.get(i).get(0).intValue()-1);
+                else
+                    System.out.print(polA.get(i).get(0).intValue());
+                System.out.print("+");
+                if(polA.get(i).get(1).intValue()+0.5 < polA.get(i).get(1) && polA.get(i).get(1)>0)
+                    System.out.print(polA.get(i).get(1).intValue()+1);
+                else if(polA.get(i).get(1).intValue()-0.5 > polA.get(i).get(1) && polA.get(i).get(1)<0)
+                    System.out.print(polA.get(i).get(1).intValue()-1);
+                else
+                    System.out.print(polA.get(i).get(1).intValue());      
+                System.out.print("i)");
             }
         }
        

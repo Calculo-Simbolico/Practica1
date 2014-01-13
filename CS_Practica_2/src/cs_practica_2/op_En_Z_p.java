@@ -81,46 +81,54 @@ public class op_En_Z_p {
     }
    public static Integer raiz_n_esima_primitiva_en_Zp_v2(Integer potDe2, Integer p){
         int raiz=0;
+        if(p==41){
+            int generador=6;
+            raiz=modulo_en_Zp(p, (int) Math.pow(generador, (40/potDe2)));
+        }else if(p==257){
+            int generador=3;
+            int aux=potencia_modulo_p(generador, (256/potDe2), 257);
+            raiz=modulo_en_Zp(p, aux);            
+        }else{
+            if((p-1)%potDe2!=0)
+                return -1;
 
-        if((p-1)%potDe2!=0)
-            return -1;
-        
-        //busco los factores primos de p-1
-        ArrayList<Integer> factores_primos=new ArrayList<Integer>();
-        int p_aux=p-1;
-        int primo=2;
-        while(p_aux!=1){
-            if(p_aux%primo==0){
-                boolean esta_ya=false;
-                for(int j=0;j<factores_primos.size();j++){
-                    if(factores_primos.get(j)==primo)
-                        esta_ya=true;
-                }
-                if(esta_ya==false)
-                    factores_primos.add(primo);
-                p_aux=p_aux/primo;
-            }else{
-                primo++;
-            }
-        }
-        //System.out.print("\nFactores primos "+factores_primos);
-        //busco el generador
-        int generador=1;
-        boolean salte=false;
-        for(int i=2;i<p && salte==false;i++){
-            salte=true;
-            for(int j=0;j<factores_primos.size() && salte==true;j++){
-                if(potencia_modulo_p(i,((p-1)/factores_primos.get(j)),p) == 1){
-                    salte=false;
+            //busco los factores primos de p-1
+            ArrayList<Integer> factores_primos=new ArrayList<Integer>();
+            int p_aux=p-1;
+            int primo=2;
+            while(p_aux!=1){
+                if(p_aux%primo==0){
+                    boolean esta_ya=false;
+                    for(int j=0;j<factores_primos.size();j++){
+                        if(factores_primos.get(j)==primo)
+                            esta_ya=true;
+                    }
+                    if(esta_ya==false)
+                        factores_primos.add(primo);
+                    p_aux=p_aux/primo;
+                }else{
+                    primo++;
                 }
             }
-            generador=i;
+            //System.out.print("\nFactores primos "+factores_primos);
+            //busco el generador
+            int generador=1;
+            boolean salte=false;
+            for(int i=2;i<p && salte==false;i++){
+                salte=true;
+                for(int j=0;j<factores_primos.size() && salte==true;j++){
+                    if(potencia_modulo_p(i,((p-1)/factores_primos.get(j)),p) == 1){
+                        salte=false;
+                    }
+                }
+                generador=i;
+            }
+            //System.out.print("\nGenerador "+generador);
+            //calculo la raiz
+            raiz=potencia_modulo_p(generador, (p-1)/potDe2,p);
+            //System.out.print("\nRaiz "+raiz);
         }
-        //System.out.print("\nGenerador "+generador);
-        //calculo la raiz
-        raiz=potencia_modulo_p(generador, (p-1)/potDe2,p);
-        //System.out.print("\nRaiz "+raiz);
-        
+            System.out.print("\n    Raiz "+raiz+" potDe2="+potDe2);
         return raiz;
     }   
    
@@ -469,9 +477,9 @@ public class op_En_Z_p {
                 polB=leer_polinomio_en_Zp(p); 
 
             }else if(intro_datos==2){
-                System.out.print("\nCuantos digitos quiere que tenga el primer polinomio:\n");
+                System.out.print("\nCuantos coeficientes quiere que tenga el primer polinomio:\n");
                 int num_dig=leer_numero();        
-                System.out.print("\nCuantos digitos quiere que tenga el segundo polinomio:\n");
+                System.out.print("\nCuantos coeficientes quiere que tenga el segundo polinomio:\n");
                 int num_dig2=leer_numero();
                 System.out.print("\nDiga una semilla para generar el numero aleatorio:\n");
                 int semilla=leer_numero();         
