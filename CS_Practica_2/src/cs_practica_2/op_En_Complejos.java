@@ -497,7 +497,8 @@ public class op_En_Complejos {
             int intro_datos=0;
             while(intro_datos!=1 && intro_datos!=2){
                 System.out.print("\nDesea introducir los polinomios:  \n    1. A mano \n    2. Aleatoriamente\n");
-                intro_datos=leer_numero();
+                //intro_datos=leer_numero();
+                intro_datos=2;
                 if(intro_datos!=1 && intro_datos!=2){
                     System.out.print("\nError: diga un numero entre 1 y 2.");
                 }
@@ -514,11 +515,13 @@ public class op_En_Complejos {
 
             }else if(intro_datos==2){
                 System.out.print("\nCuantos digitos quiere que tenga el primer polinomio:\n");
-                int num_dig=leer_numero();        
+                int num_dig=leer_numero(); 
+                num_dig++;
                 System.out.print("\nCuantos digitos quiere que tenga el segundo polinomio:\n");
                 int num_dig2=leer_numero();
+                num_dig2++;
                 System.out.print("\nDiga una semilla para generar el numero aleatorio:\n");
-                int semilla=leer_numero();         
+                int semilla=1;         
                 rnd.setSeed(semilla);
                 for(int i=0;i<num_dig;i++){
                     ArrayList<Double>complejo1=new ArrayList<>();
@@ -543,7 +546,7 @@ public class op_En_Complejos {
             mostrar_polinomio(polA);
             System.out.print("\nSegundo polinomio generado aleatoriamente: ");
             mostrar_polinomio(polB);
-            int mult_usada=0;
+            int mult_usada=3;
             while(mult_usada!=1 && mult_usada!=2 && mult_usada!=3){
                 System.out.print("\n\nDiga que multiplicacion quiere usar: \n   1.Escuela\n   2.Multiplicacion mediante FFT\n   3.Las dos anteriores para comparar los tiempos\n");
                 mult_usada=leer_numero();      
@@ -576,21 +579,35 @@ public class op_En_Complejos {
                     mostrar_polinomio(polSol2);
                     System.out.print("\n    Tiempo empleado en la multiplicacion mediante FFT:   "+tiempo+" ms");
                 }else if(mult_usada==3){
-                    ArrayList<ArrayList<Double>> polSol=new ArrayList<ArrayList<Double>>();                 
-                    long time1=System.currentTimeMillis();
-                    polSol=multiplicacion_escuela_en_C(polA, polB);
+                    ArrayList<ArrayList<Double>> polSol=new ArrayList<ArrayList<Double>>();  
+                    
+                    int repEsc=10;
+                    //Bucle (cambiar repeticiones)
+                    long time1=System.currentTimeMillis();   
+                    for(int p=0;p<repEsc;p++)
+                        polSol=multiplicacion_escuela_en_C(polA, polB);
                     long time2=System.currentTimeMillis();
+                    
                     if(polSol.get(polSol.size()-1).get(0).intValue() == 0 && polSol.get(polSol.size()-1).get(1).intValue() == 0)
                           quitar_ceros_en_C(polSol);                    
                     System.out.print("\nResultado en C de multiplicacion ESCUELA:\n    ");        
                     mostrar_polinomio(polSol);
-                    long tiempo=time2-time1;
+                    
+                    //Tiempo (cambiar repeticiones)
+                    long tiempo=(time2-time1)/repEsc;
                     System.out.print("\n    Tiempo empleado en la multiplicacion escuela:   "+tiempo+" ms");
-                    ArrayList<ArrayList<Double>> polSol2=new ArrayList<ArrayList<Double>>();       
-                     time1=System.currentTimeMillis();
-                    polSol2=multiplicacion_FFT_en_C(polA, polB, polA.size()-1, polB.size()-1);
-                     time2=System.currentTimeMillis();
-                     tiempo=time2-time1;
+                    
+                    ArrayList<ArrayList<Double>> polSol2=new ArrayList<ArrayList<Double>>(); 
+                    
+                    int repFFT=10;
+                    //Bucle (cambiar repeticiones)
+                    time1=System.currentTimeMillis();
+                    for(int p=0;p<repFFT;p++)
+                        polSol2=multiplicacion_FFT_en_C(polA, polB, polA.size()-1, polB.size()-1);
+                    time2=System.currentTimeMillis();
+                    //Tiempo (cambiar repeticiones)
+                    tiempo=(time2-time1)/repFFT;
+                            
                     
                     if(polSol2.get(polSol2.size()-1).get(0).intValue() == 0 && polSol2.get(polSol2.size()-1).get(1).intValue() == 0)
                           quitar_ceros_en_C(polSol2);  
@@ -602,11 +619,11 @@ public class op_En_Complejos {
             salir=0;
             while(salir!=1 && salir!=2){
                 System.out.print("\n\n¿Desea hacer mas multiplicaciones de polinomios en C?\n   1. Si\n   2. No\n");
-                salir=leer_numero();      
+                salir=2;      
                 if(salir!=1 && salir!=2){
                     System.out.print("\nError: diga un numero entre 1 y 2.");
                 }
             }                     
-        }        
+        }      
     }
 }

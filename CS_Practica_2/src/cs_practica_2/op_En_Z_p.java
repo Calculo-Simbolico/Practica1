@@ -84,6 +84,10 @@ public class op_En_Z_p {
         if(p==41){
             int generador=6;
             raiz=modulo_en_Zp(p, (int) Math.pow(generador, (40/potDe2)));
+            //System.out.print("\n    p41 "+raiz+" potDe2="+potDe2);
+            if(potDe2>8){
+                return -1;
+            }
         }else if(p==257){
             int generador=3;
             int aux=potencia_modulo_p(generador, (256/potDe2), 257);
@@ -128,7 +132,7 @@ public class op_En_Z_p {
             raiz=potencia_modulo_p(generador, (p-1)/potDe2,p);
             //System.out.print("\nRaiz "+raiz);
         }
-            System.out.print("\n    Raiz "+raiz+" potDe2="+potDe2);
+            //System.out.print("\n    Raiz "+raiz+" potDe2="+potDe2);
         return raiz;
     }   
    
@@ -457,13 +461,15 @@ public class op_En_Z_p {
             int intro_datos=0;
             if(primo==0){
                 System.out.print("\nINTRODUCE UN NUMERO PRIMO IMPAR p:\n");
-                p=leer_numero();
+                p=65537;
+                //p=leer_numero();
             }else{
                 p=primo;
             }
             while(intro_datos!=1 && intro_datos!=2){
                 System.out.print("\nDesea introducir los polinomios:  \n    1. A mano \n    2. Aleatoriamente\n");
-                intro_datos=leer_numero();
+                //intro_datos=leer_numero();
+                intro_datos=2;
                 if(intro_datos!=1 && intro_datos!=2){
                     System.out.print("\nError: diga un numero entre 1 y 2.");
                 }
@@ -482,7 +488,7 @@ public class op_En_Z_p {
                 System.out.print("\nCuantos coeficientes quiere que tenga el segundo polinomio:\n");
                 int num_dig2=leer_numero();
                 System.out.print("\nDiga una semilla para generar el numero aleatorio:\n");
-                int semilla=leer_numero();         
+                int semilla=1;         
                 rnd.setSeed(semilla);
                 for(int i=0;i<num_dig;i++){
                     polA.add(i,modulo_en_Zp(p, (rnd.nextInt())%p));
@@ -506,7 +512,7 @@ public class op_En_Z_p {
                     System.out.print(polB.get(i));
             }
 
-            int mult_usada=0;
+            int mult_usada=3;
             while(mult_usada!=1 && mult_usada!=2 && mult_usada!=3){
                 System.out.print("\n\nDiga que multiplicacion quiere usar: \n   1.Escuela\n   2.Multiplicacion mediante FFT\n   3.Las dos anteriores para comparar los tiempos\n");
                 mult_usada=leer_numero();      
@@ -551,11 +557,18 @@ public class op_En_Z_p {
                             System.out.print(polSol2.get(i));
                     } 
                     System.out.print("\n    Tiempo empleado en la multiplicacion mediante FFT:   "+tiempo+" ms");
+               
+                
                 }else if(mult_usada==3){
-                    ArrayList<Integer> polSol=new ArrayList<Integer>();                 
-                    long time1=System.currentTimeMillis();
-                    polSol=multiplicacion_escuela_en_Zp(polA, polB, p);
+                    ArrayList<Integer> polSol=new ArrayList<Integer>(); 
+                    
+                    //Bucle (cambiar repeticiones)
+                    int repEsc=100;
+                    long time1=System.currentTimeMillis();   
+                    for(int l=0;l<repEsc;l++)
+                        polSol=multiplicacion_escuela_en_Zp(polA, polB, p);
                     long time2=System.currentTimeMillis();
+                    
                     if(polSol.get(polSol.size()-1) == 0)
                           quitar_ceros_en_Zp(polSol);                    
                     System.out.print("\nResultado en Z"+p+" de multiplicacion ESCUELA:\n    ");        
@@ -565,7 +578,9 @@ public class op_En_Z_p {
                         else
                             System.out.print(polSol.get(i));
                     } 
-                    long tiempo=time2-time1;
+                    //Tiempo final
+                    long tiempo=(time2-time1);
+                    
                     System.out.print("\n    Tiempo empleado en la multiplicacion escuela:   "+tiempo+" ms");
 
                     ArrayList<Integer> polSol2=new ArrayList<Integer>();  
@@ -576,10 +591,15 @@ public class op_En_Z_p {
                     if(polB.get(polB.size()-1) == 0)
                           quitar_ceros_en_Zp(polB);   
                     
-                     time1=System.currentTimeMillis();
-                    polSol2=multiplicacion_FFT_en_Zp(polA, polB, polA.size()-1, polB.size()-1, p);
-                     time2=System.currentTimeMillis();
-                     tiempo=time2-time1;
+                    //Bucle (cambiar repeticiones)
+                    int repFFT=10;
+                    time1=System.currentTimeMillis();   
+                    for(int l=0;l<repFFT;l++)
+                        polSol2=multiplicacion_FFT_en_Zp(polA, polB, polA.size()-1, polB.size()-1, p);
+                    time2=System.currentTimeMillis();
+                    
+                    //Tiempo final
+                    tiempo=(time2-time1);
                     
                     if(polSol2.get(polSol2.size()-1) == 0)
                         quitar_ceros_en_Zp(polSol2); 

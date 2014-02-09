@@ -34,7 +34,8 @@ public class CS_Practica_2 {
             int intro_datos=0;
             while(intro_datos!=1 && intro_datos!=2 && intro_datos!=3 && intro_datos!=4){
                 System.out.print("\nDesea multiplicar polinomios sobre:  \n    1. Numeros Complejos \n    2. Z_41\n    3. Z_257\n    4. Zp\n");
-                intro_datos=leer_numero();
+                //intro_datos=leer_numero();
+                intro_datos=3;
                 if(intro_datos!=1 && intro_datos!=2 && intro_datos!=3 && intro_datos!=4){
                     System.out.print("\nError: diga un numero entre 1 y 4.");
                 }
@@ -73,7 +74,7 @@ public class CS_Practica_2 {
             salir=0;
             while(salir!=1 && salir!=2){
                 System.out.print("\n\n¿Desea hacer mas multiplicaciones de polinomios?\n   1. Si\n   2. No\n");
-                salir=leer_numero();      
+                salir=2;      
                 if(salir!=1 && salir!=2){
                     System.out.print("\nError: diga un numero entre 1 y 2.");
                 }
